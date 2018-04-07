@@ -7,13 +7,17 @@
       <mt-button icon="more" slot="right"></mt-button>
     </mt-header>
 
-    step2
+    <draw></draw>
+    
   </div>
 </template>
 
 <script>
+import Draw from "./common/draw";
+
   export default {
     name: 'step2',
+    components:{Draw},
     data() {
       return {
 

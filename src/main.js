@@ -4,7 +4,7 @@ import Vue from 'vue'
 
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
-import { Table ,TableColumn ,Icon,Popover,Row,Col,Input,DatePicker,Button,Dialog} from 'element-ui';
+import { Table ,TableColumn ,Icon,Popover,Row,Col,Input,DatePicker,Button,Dialog,Upload} from 'element-ui';
 
 import App from './App'
 import router from './router'
@@ -24,6 +24,7 @@ Vue.use(Input)
 Vue.use(Popover)
 Vue.use(Button)
 Vue.use(Dialog)
+Vue.use(Upload)
 
 /* eslint-disable no-new */
 new Vue({

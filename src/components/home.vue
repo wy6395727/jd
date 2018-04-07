@@ -121,10 +121,14 @@
 
     <el-dialog
       :width="isPhone?'100%':'40%'"
-      :visible.async="jumpDialog"
+      :visible.sync="jumpDialog"
       title="选择类型"
       :center="true"
     >
+      <div slot="title" class="dialog-title">
+        <span class="dialog-icon el-icon-circle-plus" ></span>
+        <span>选择类型</span>
+        </div>
       <div class="jump-wrap">
         <p>
           <router-link :to="{name:'step1'}">
@@ -358,6 +362,15 @@
     top: @header-height - 170px;
   }
 
+
+  .dialog-title{
+    position: relative;
+    .dialog-icon{
+      position: absolute;
+      left:1rem;
+      color:@theme;
+    }
+  }
   .jump-wrap{
     font-size: 1rem;
   }
@@ -368,6 +381,7 @@
     padding: .25rem 1rem;
     .jump-status{
       font-size: .8rem;
+      
     }
 
   }

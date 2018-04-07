@@ -13,7 +13,8 @@ export default {
 
   },
   methods:{
-  }
+  },
+  
 }
 </script>
 
@@ -25,5 +26,5 @@ export default {
   body{
     margin: 0px;
     background-color: rgba(226, 230, 238, 0.29);
-  }
+  } 
 </style>
