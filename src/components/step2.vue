@@ -7,8 +7,6 @@
       <mt-button icon="more" slot="right"></mt-button>
     </mt-header>
 
-    <draw></draw>
-    
   </div>
 </template>
 

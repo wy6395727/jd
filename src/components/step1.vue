@@ -4,14 +4,11 @@
       <router-link to="/" slot="left">
         <mt-button icon="back">返回</mt-button>
       </router-link>
-      
+
       <mt-button icon="more" slot="right"></mt-button>
     </mt-header>
 
-    <header class="company-title">
-      <div>捷得服饰（上海）有限公司品质质检报告（前期）</div> 
-      <div>Jade Fashion&CO.INC</div> 
-    </header>
+    <company-title></company-title>
 
     <table class="c-table">
       <tr>
@@ -80,7 +77,7 @@
       <tr>
         <td>厂方签字</td>
         <td class="c-td c-td-draw">
-          <div style="width:100%;height:2.5rem;"  @click="openDraw">
+          <div style="width:100%;height:2.5rem;text-align: left;"  @click="openDraw">
             <img v-if="drawImageUrl" :src="drawImageUrl" alt="" style="width:5rem;height:100%;">
           </div>
         </td>
@@ -93,25 +90,26 @@
       </tr>
     </table>
 
-    <mt-popup
-      v-model="popupVisible"
-      popup-transition="popup-fade"
-      position="bottom"
-      >
-      <div style="width:100%;height:100%;backgroud-color:#eee;">
-        <h1 style="margin-top:1.5rem;color:#fff;text-align:center;font-size:2rem;">请在指定区域内签名</h1>
-        <draw @drawTable="drawTable"></draw>
-      </div>
-    </mt-popup>
+    <el-dialog
+      :width="isPhone?'90%':'40%'"
+      :visible.sync="popupVisible"
+      :center="true"
+      :close-on-click-modal="false"
+      :lock-scroll="true"
+    >
+      <header slot="title" style="font-size: 2rem;">请在指定区域内签名</header>
+      <draw @drawTable="drawTable"></draw>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import TablePicture from "./common/table-picture";
+import CompanyTitle from "./common/company-title";
 import Draw from "./common/draw";
 export default {
   name: "step1",
-  components:{TablePicture,Draw},
+  components:{TablePicture,CompanyTitle,Draw},
   data() {
     return {
       imageUrl: "",
@@ -135,14 +133,18 @@ export default {
   },
   created() {},
   computed: {
-    
+    isPhone(){
+      return isPhone;
+    },
   },
   methods: {
    openDraw(){
+     console.log('draw')
     this.popupVisible=true;
    },
    drawTable(url){
     this.drawImageUrl=url;
+    this.popupVisible=false;
    }
   }
 };
@@ -150,15 +152,6 @@ export default {
 
 <style lang="less">
 @import "../assets/style/var";
-.company-title {
-  text-align: center;
-  background-color: #fff;
-  margin: 1.5rem 0 1rem;
-  padding: 0.5rem;
-  & > div {
-    padding: 0.25rem;
-  }
-}
 
 .c-table {
   border-collapse: collapse;
@@ -183,7 +176,7 @@ export default {
   .mint-cell-wrapper{
     background-image: none;
   }
-  .mint-field-core {  
+  .mint-field-core {
     overflow: hidden;
     text-overflow: ellipsis;
   }

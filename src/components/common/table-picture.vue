@@ -8,60 +8,10 @@
               <td class="c-td-text">图片</td>
               <td
                class="c-td c-td-img"
+               v-for="j in 3"
+               :key="j.key"
                >
-                <div class="dd">
-                  <el-upload
-                    class=""
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                    :on-change="handlePictureChange1"
-                    :auto-upload="false"
-                    :before-upload="beforeAvatarUpload1">
-                    <img v-if="imageUrls[i][0].imageUrl" :src="imageUrls[i][0].imageUrl" class="img-upload">
-                    <div v-else>
-                      <i class  ="el-icon-plus avatar-uploader-icon"></i>
-                      <span class="el-plus-span">上传图片</span>
-                    </div>
-                  </el-upload>
-                </div>
-              </td>
-              <td
-               class="c-td c-td-img"
-               >
-                <div class="dd">
-                  <el-upload
-                    class=""
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                    :on-change="handlePictureChange1"
-                    :auto-upload="false"
-                    :before-upload="beforeAvatarUpload1">
-                    <img v-if="imageUrls[i][1].imageUrl" :src="imageUrls[i][0].imageUrl" class="img-upload">
-                    <div v-else>
-                      <i class  ="el-icon-plus avatar-uploader-icon"></i>
-                      <span class="el-plus-span">上传图片</span>
-                    </div>
-                  </el-upload>
-                </div>
-              </td>
-              <td
-               class="c-td c-td-img"
-               >
-                <div class="dd">
-                  <el-upload
-                    class=""
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                    :on-change="handlePictureChange1"
-                    :auto-upload="false"
-                    :before-upload="beforeAvatarUpload1">
-                    <img v-if="imageUrls[i][2].imageUrl" :src="imageUrls[i][0].imageUrl" class="img-upload">
-                    <div v-else>
-                      <i class  ="el-icon-plus avatar-uploader-icon"></i>
-                      <span class="el-plus-span">上传图片</span>
-                    </div>
-                  </el-upload>
-                </div>
+                <td-upload :tdindex="{row:i,col:j}" @handlechange="handlechange"></td-upload>
               </td>
           </tr>
           <tr>
@@ -90,7 +40,10 @@
 </template>
 
 <script>
+import TdUpload from "./td-upload.vue";
+
 export default {
+  components: {TdUpload},
   name: "table-picture",
   props: {
     titles: {
@@ -101,8 +54,6 @@ export default {
   data() {
     return {
       imageUrls: [],
-
-      arr2: [[1, 2, 3], [1, 2, 3], [1, 2, 3]]
     };
   },
   created() {
@@ -124,28 +75,6 @@ export default {
   },
   computed: {},
   methods: {
-   
-    //上傳圖片
-    beforeAvatarUpload1(file) {
-      const isJPG = file.type === "image/jpeg";
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
-      }
-      if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
-      }
-      return isJPG && isLt2M;
-    },
-    handlePictureChange1(file, fileList,i) {
-      // debugger
-      this.imageUrl = URL.createObjectURL(file.raw);
-    },
-    handleRemove1(file, fileList) {
-      console.log(file, fileList);
-    }
-    //上傳圖片--end
   }
 };
 </script>
@@ -165,21 +94,5 @@ export default {
     height: 5rem;
     width: calc((100vw- 15rem)/3);
   }
-}
-.avatar-uploader-icon {
-  font-size: 1.5rem;
-  color: #8c939d;
-  width: 2rem;
-  height: 2rem;
-  line-height: 2rem;
-  text-align: center;
-}
-.el-plus-span {
-  color: @ctxt;
-}
-.img-upload {
-  width: 100%;
-  height: 5rem;
-  display: block;
 }
 </style>
