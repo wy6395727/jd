@@ -11,26 +11,44 @@
                v-for="j in 3"
                :key="j.key"
                >
-                <td-upload :tdindex="{row:i,col:j}" @handlechange="handlechange"></td-upload>
+                <td-upload :tdindex="{row:i,col:j}" @handlesuccess="handlesuccess"></td-upload>
               </td>
           </tr>
           <tr>
             <td class="c-td-text">图片说明</td>
-            <td class="c-td"></td>
-            <td class="c-td"></td>
-            <td class="c-td"></td>
+            <td class="c-td">
+              <mt-field v-model="imageUrls[i].ImgItem[0].TPSM"></mt-field>
+            </td>
+            <td class="c-td">
+              <mt-field v-model="imageUrls[i].ImgItem[1].TPSM"></mt-field>
+            </td>
+            <td class="c-td">
+              <mt-field v-model="imageUrls[i].ImgItem[2].TPSM"></mt-field>
+            </td>
           </tr>
            <tr>
             <td class="c-td-text">拍摄时间</td>
-            <td class="c-td"></td>
-            <td class="c-td"></td>
-            <td class="c-td"></td>
+            <td class="c-td">
+              <mt-field v-model="imageUrls[i].ImgItem[0].PSSJ"></mt-field>
+            </td>
+            <td class="c-td">
+              <mt-field v-model="imageUrls[i].ImgItem[0].PSSJ"></mt-field>
+            </td>
+            <td class="c-td">
+              <mt-field v-model="imageUrls[i].ImgItem[0].PSSJ"></mt-field>
+            </td>
           </tr>
           <tr>
             <td class="c-td-text">拍摄地点</td>
-            <td class="c-td"></td>
-            <td class="c-td"></td>
-            <td class="c-td"></td>
+            <td class="c-td">
+              <mt-field v-model="imageUrls[i].ImgItem[0].PSDD"></mt-field>
+            </td>
+            <td class="c-td">
+              <mt-field v-model="imageUrls[i].ImgItem[0].PSDD"></mt-field>
+            </td>
+            <td class="c-td">
+              <mt-field v-model="imageUrls[i].ImgItem[0].PSDD"></mt-field>
+            </td>
           </tr>
           </table>
         </td>
@@ -49,32 +67,54 @@ export default {
     titles: {
       type: Array,
       default: () => ["技术包", "面料", "PP样", "PPMeetingRecord"]
+    },
+    QCITEM:{   // 修改传入数据，默认空数组为添加 (可以判断是修改还是添加)
+      type:Array,
+      default:[]
     }
   },
   data() {
     return {
-      imageUrls: [],
+      imageUrls: [],  //table各个数据
     };
   },
   created() {
     let num = this.titles.length;
+//    {“PSSJ”:”时间”,"PSDD":"上海","TPSM":"图片说明",“ImgPath”:”图片路径”,”Index”:”第几张”}
 
-    for (let i = 0; i < num; i++) {
-      this.$set(this.imageUrls, i, []);
-      for (let j = 0; j < 3; j++) {
-        this.$set(this.imageUrls[i], j, {
-          imageUrl: "",
-          desc: "",
-          time: "",
-          site: ""
-        });
+//    [{"ID":包装图片表 ID序号 新增ID=0，修改ID为自己值,
+//      "QCID":"主表ID",
+//      "IMGTYPE":1,
+//      "NAME":"Test",
+//“ImgItem”:”[{“PSSJ”:”时间”,"PSDD":"上海","TPSM":"图片说明",“ImgPath”:”图片路径”,”Index”:”第几张”}]”
+    if(this.QCITEM.length>0){
+      this.imageUrls=JSON.parse(JSON.stringify(this.QCITEM));
+    }else{
+      for (let i = 0; i < num; i++) {
+        let item={};
+        item.NAME="";
+        item.ImgItem=[];
+        for(let j =0;j<3;j++){
+          let imgItem={
+            PSSJ:"",
+            PSDD:"",
+            TPSM:"",
+            ImgPath:"",
+            Index:j
+          };
+          item.ImgItem.push(imgItem);
+        }
+        this.imageUrls.push(item);
       }
     }
-
     console.log(this.imageUrls);
   },
   computed: {},
   methods: {
+    handlesuccess(FilePath,{row,col}){
+      // 自定义的设置filepath 事件
+      this.imageUrls[row].ImgItem[col].ImgPath=FilePath;
+    }
   }
 };
 </script>
@@ -92,7 +132,7 @@ export default {
   .c-td-img {
     min-height: 5rem;
     height: 5rem;
-    width: calc((100vw- 15rem)/3);
+    width: calc(~"(100vw - 15rem)/3");
   }
 }
 </style>

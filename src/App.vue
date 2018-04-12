@@ -14,7 +14,7 @@ export default {
   },
   methods:{
   },
-  
+
 }
 </script>
 
@@ -23,8 +23,5 @@ export default {
   @import "./assets/style/common";
 
   /*@import "./icomoon/style";*/
-  body{
-    margin: 0px;
-    background-color: rgba(226, 230, 238, 0.29);
-  } 
+
 </style>

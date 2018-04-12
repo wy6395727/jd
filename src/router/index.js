@@ -9,8 +9,17 @@ const Step2 = resovle => require(['../components/step2'], resovle);
 const Step3 = resovle => require(['../components/step3'], resovle);
 
 
+const ttt = resovle => require(['../components/ttt'], resovle);
+
+
 export default new Router({
   routes: [
+    {
+      path: '/ttt',
+      component: ttt
+    },
+
+
     {
       path: '/',
       component: Home

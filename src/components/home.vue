@@ -20,104 +20,130 @@
         <el-row :gutter="40" class="form-row">
           <el-col :span="6" class="form-col">
             <span class="lable">合同号：</span>
-            <el-input type="text" v-model="postForm.hth"></el-input>
+            <el-input type="text" v-model="postForm.ContractNo"></el-input>
           </el-col>
           <el-col :span="6" class="form-col">
             <span class="lable">po：</span>
-            <el-input type="text" v-model="postForm.po"></el-input>
+            <el-input type="text" v-model="postForm.PO"></el-input>
           </el-col>
           <el-col :span="6" class="form-col">
             <span class="lable">款式：</span>
-            <el-input type="text" v-model="postForm.ks"></el-input>
+            <el-input type="text" v-model="postForm.StyleNo"></el-input>
           </el-col>
           <el-col :span="6" class="form-col">
             <span class="lable">工厂：</span>
-            <el-input type="text" v-model="postForm.gc"></el-input>
+            <el-input type="text" v-model="postForm.FactoryID"></el-input>
           </el-col>
         </el-row>
-        <el-row type="flex" justify="space-between" class="form-row" style="margin-top: 10px;">
-          <el-col :span="16" class="form-col">
+        <el-row type="flex" justify="space-between" class="form-row" style="margin-top: 10px;" :gutter="40">
+          <el-col :span="14" class="form-col">
             <span class="lable">IH/日期：</span>
             <el-input @focus="openPicker(1)"
-                      v-model="postForm.ihdate1"
+                      v-model="postForm.Ihdate1"
                       placeholder="开始日期"></el-input>
             <span style="line-height: 40px;">&nbsp; to &nbsp; </span>
             <el-input @focus="openPicker(2)"
-                      v-model="postForm.ihdate2"
+                      v-model="postForm.Ihdate2"
                       placeholder="结束日期"></el-input>
           </el-col>
-          <el-col :span="5" class="form-col">
-            <el-button type="primary" style="width: 100%;">查 &nbsp;询</el-button>
+          <el-col :span="5">
+            <el-button
+              @click="searchHandle"
+              type="primary" style="width: 100%;">查 &nbsp;询
+            </el-button>
+          </el-col>
+          <el-col :span="5">
+            <el-button
+              @click="resetHandle"
+              type="primary" style="width: 100%;">重 &nbsp;置
+            </el-button>
           </el-col>
         </el-row>
       </div>
     </transition>
 
-    <mt-loadmore
-      :top-method="loadTop"
-      ref="loadmore"
-      @top-status-change="handleTopChange"
-      :bottom-method="loadBottom" :bottom-all-loaded="allLoaded"
-    >
+    <div class="loadmore-wrapper" @touchmove.stop="leavehandle">
+      <mt-loadmore
+        :top-method="loadTop"
+        ref="loadmore"
+        @top-status-change="handleTopChange"
+        @bottom-status-change="handleBottomChange"
+        :bottom-method="loadBottom"
+        :auto-fill="false"
+      >
+        <el-table
+          :data="tableData"
+          style="width: 100%">
+          <el-table-column
+            prop="ContractNo"
+            label="合同号"
+          >
+          </el-table-column>
+          <el-table-column
+            prop="PO"
+            label="po"
+          >
+          </el-table-column>
+          <el-table-column
+            prop="StyleNo"
+            label="款式"
+          >
+          </el-table-column>
+          <el-table-column
+            prop="IHDate"
+            label="IH/日期"
+          >
+          </el-table-column>
+          <el-table-column
+            prop="CustName"
+            label="客户名称"
+          >
+          </el-table-column>
+          <el-table-column
+            prop="FactName"
+            label="工厂"
+          >
+          </el-table-column>
+          <el-table-column
+            prop="TotalQty"
+            label="加工数量"
+          >
+          </el-table-column>
+          <el-table-column
+            prop="GenDanName"
+            label="生产跟单"
+          >
+          </el-table-column>
+          <el-table-column
+            label="操作"
+          >
+            <template slot-scope="scope">
+              <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
 
-      <el-table
-        :data="tableData"
-        style="width: 100%">
-        <el-table-column
-          prop="hth"
-          label="合同号"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="po"
-          label="po"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="ihdate"
-          label="IH/日期"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="ihdate"
-          label="IH/日期"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="khmc"
-          label="客户名称"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="gc"
-          label="工厂"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="jgsl"
-          label="加工数量"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="scgd"
-          label="生产跟单"
-        >
-        </el-table-column>
-        <el-table-column
-          label="操作"
-        >
-          <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+        <div slot="top" class="mint-loadmore-top">
+          <span v-show="topStatus !== 'loading'">
+            <span>下拉刷新</span>
+            <span :class="{ 'rotate': topStatus === 'drop' }">↓</span>
+          </span>
+          <span v-show="topStatus === 'loading'">
+            <mt-spinner type="snake" color="#26a2ff"></mt-spinner>
+          </span>
+        </div>
 
-      <div slot="top" class="mint-loadmore-top">
-        <span v-show="topStatus !== 'loading'" :class="{ 'rotate': topStatus === 'drop' }">↓</span>
-        <span v-show="topStatus === 'loading'">Loading...</span>
+        <div slot="bottom" class="mint-loadmore-bottom">
+          <span v-show="bottomStatus !== 'loading'" :class="{ 'rotate': bottomStatus === 'drop' }">↑</span>
+          <span v-show="bottomStatus === 'loading'">
+            <mt-spinner type="snake" color="#26a2ff"></mt-spinner>
+          </span>
+        </div>
+      </mt-loadmore>
+      <div class="no-more-c" v-if="allLoaded">
+        没有更多了..
       </div>
-
-    </mt-loadmore>
+    </div>
 
     <el-dialog
       :width="isPhone?'100%':'40%'"
@@ -126,9 +152,9 @@
       :center="true"
     >
       <div slot="title" class="dialog-title">
-        <span class="dialog-icon el-icon-circle-plus" ></span>
+        <span class="dialog-icon el-icon-circle-plus"></span>
         <span>选择类型</span>
-        </div>
+      </div>
       <div class="jump-wrap">
         <p>
           <router-link :to="{name:'step1'}">
@@ -160,7 +186,7 @@
     <mt-datetime-picker
       ref="picker1"
       type="date"
-      v-model="ihdate1"
+      v-model="Ihdate1"
       year-format="{value} 年"
       month-format="{value} 月"
       date-format="{value} 日"
@@ -170,7 +196,7 @@
     <mt-datetime-picker
       ref="picker2"
       type="date"
-      v-model="ihdate2"
+      v-model="Ihdate2"
       year-format="{value} 年"
       month-format="{value} 月"
       date-format="{value} 日"
@@ -182,7 +208,10 @@
 
 <script>
   import Vue from 'vue'
+  import Api from '../axios/api'
+  import {Indicator} from "mint-ui"
 
+  var self = "";
   export default {
     name: 'page-index',
     components: {},
@@ -190,102 +219,113 @@
       return {
         active: 1,   //点击切换tab
         topStatus: '',  //上拉刷状态
+        bottomStatus: '',  //上拉刷状态
         allLoaded: false,  //下拉加载到最后一页
-        jumpDialog:false, // 跳转弹框
+        jumpDialog: false, // 跳转弹框
         searchClicked: false,  //控制搜索菜单可见
+
+        total: 0, //数据总量
         postForm: {
-          hth: "",
-          po: "",
-          ks: "",
-          gc: "",
-          ihdate1: '',
-          ihdate2: '',
+          PO: "",
+          StyleNo: "",//"款号",
+          FactoryID: "",//"工厂ID",
+          ContractNo: "",//"加工合同",
+          Ihdate1: '',  //起始日期
+          Ihdate2: '', //结束日期
+          PageSize: 10,
+          PageIndex: 1
         },
-        tableData: [
-          {
-            "hth": "JDM1123",
-            "po": "032218",
-            "ks": "MD825689",
-            "ihdate": "2018-03-03",
-            khmc: 'create init vv',
-            gc: '山东另一制造',
-            jgsl: '99889',
-            scgd: 'grandlan'
-          },
-          {
-            "hth": "JDM1123",
-            "po": "032218",
-            "ks": "MD825689",
-            "ihdate": "2018-03-03",
-            khmc: 'create init vv',
-            gc: '山东另一制造',
-            jgsl: '99889',
-            scgd: 'grandlan'
-          },
-          {
-            "hth": "JDM1123",
-            "po": "032218",
-            "ks": "MD825689",
-            "ihdate": "2018-03-03",
-            khmc: 'create init vv',
-            gc: '山东另一制造',
-            jgsl: '99889',
-            scgd: 'grandlan'
-          },
-          {
-            "hth": "JDM1123",
-            "po": "032218",
-            "ks": "MD825689",
-            "ihdate": "2018-03-03",
-            khmc: 'create init vv',
-            gc: '山东另一制造',
-            jgsl: '99889',
-            scgd: 'grandlan'
-          }
-        ]
+        tableData: []
       }
     },
     created() {
-      console.log(isPhone)
+      self = this;
+
+      Indicator.open({
+        text: '加载中...',
+        spinnerType: 'fading-circle'
+      });
+      this.fetchData({isMore: false}).then(() => {
+        Indicator.close();
+      })
     },
     computed: {
-      isPhone(){
+      isPhone() {
         return isPhone;
       },
-      ihdate1() {
-        if (this.postForm.ihdate1 != '') {
-          return new Date(this.postForm.ihdate1)
+      Ihdate1() {
+        if (this.postForm.Ihdate1 != '') {
+          return new Date(this.postForm.Ihdate1)
         } else {
           return new Date();
         }
       },
-      ihdate2() {
-        if (this.postForm.ihdate2 != '') {
-          return new Date(this.postForm.ihdate2)
+      Ihdate2() {
+        if (this.postForm.Ihdate2 != '') {
+          return new Date(this.postForm.Ihdate2)
         } else {
           return new Date();
         }
       },
     },
     methods: {
-      fetchData() {
+      async fetchData({isMore}) {
+        //ismore 下拉true ，刷新false
+        let resData = await Api.GetSearchMakeContractList(this.postForm);
+        if (resData.data.STATUS) {
+          if (isMore) {
+            resData.data.DATAOBJ.ITEM.forEach(item => {
+              this.tableData.push(item);
+            });
+          } else {
+            this.tableData = resData.data.DATAOBJ.ITEM;
+          }
+          this.total = resData.data.DATAOBJ.TOTAL;
+          console.log(this.tableData)
+          console.log(this.total)
+        }
 
+        return;
       },
       loadTop() {
-        // 加载更多数据
+        // 下拉刷新
+        this.postForm.PageIndex = 1;
+        this.fetchData({isMore: false});
         this.$refs.loadmore.onTopLoaded();
+      },
+      loadBottom() {
+        // 加载更多数据
+        if (this.tableData.length < this.total) {
+          this.postForm.PageIndex += 1;
+          this.fetchData({isMore: true});
+        } else {
+          this.allLoaded = true;// 若数据已全部获取完毕
+        }
+//        this.$refs.loadmore.onBottomLoaded();
       },
       handleTopChange(status) {
         this.topStatus = status;
       },
-      loadBottom() {
-        // 加载更多数据
-        this.allLoaded = true;// 若数据已全部获取完毕
-        this.$refs.loadmore.onBottomLoaded();
+      handleBottomChange(status) {
+        this.bottomStatus = status;
       },
 
       clickSearch() {
-        this.searchClicked = true;
+        this.searchClicked = !this.searchClicked;
+      },
+      searchHandle() {
+        this.postForm.PageIndex = 1;
+        this.fetchData();
+      },
+      resetHandle() {
+        this.postForm.PO = "";
+        this.postForm.StyleNo = "";
+        this.postForm.FactoryID = "";
+        this.postForm.ContractNo = "";
+        this.postForm.Ihdate1 = "";
+        this.postForm.Ihdate2 = "";
+        this.postForm.PageSize = 10;
+        this.postForm.PageIndex = 1;
       },
       openPicker(n) {
         let key = 'picker' + n;
@@ -293,18 +333,22 @@
       },
       handleConfirm1(time) {
         if (time) {
-          this.postForm.ihdate1 = time.toLocaleDateString();
+          this.postForm.Ihdate1 = time.toLocaleDateString();
         }
       },
       handleConfirm2(time) {
         if (time) {
-          this.postForm.ihdate2 = time.toLocaleDateString();
+          this.postForm.Ihdate2 = time.toLocaleDateString();
         }
       },
-      handleClick(row){
-        //todo
+      handleClick(row) {
         console.log(row);
-        this.jumpDialog=true;
+        this.jumpDialog = true;
+      },
+      leavehandle(e) {
+        //  一旦滚动了table 关闭检索框
+        this.searchClicked=false;
+        console.log(e)
       }
     }
   }
@@ -354,36 +398,62 @@
   }
 
   .move-enter-active, .move-leave-active {
-    transition: all .8s;
+    transition: all .5s;
   }
 
   .move-enter, .move-leave-to {
     opacity: 0;
-    top: @header-height - 170px;
+    top: 0;
+    transform: scale(0.3, 0.5);
   }
 
-
-  .dialog-title{
+  .dialog-title {
     position: relative;
-    .dialog-icon{
+    .dialog-icon {
       position: absolute;
-      left:1rem;
-      color:@theme;
+      left: 1rem;
+      color: @theme;
     }
   }
-  .jump-wrap{
+
+  .jump-wrap {
     font-size: 1rem;
   }
-  .jump-div{
+
+  .jump-div {
     color: @mtxt;
     display: flex;
     justify-content: space-between;
     padding: .25rem 1rem;
-    .jump-status{
+    .jump-status {
       font-size: .8rem;
-      
     }
+  }
 
+  .loadmore-wrapper {
+    height: calc(~"100vh - " @header-height);
+    overflow: scroll;
+  }
+
+  .mint-loadmore-top, .mint-loadmore-bottom {
+    span {
+      display: inline-block;
+      vertical-align: middle;
+
+      &.rotate {
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+        -webkit-transition: .2s linear;
+        transition: .2s linear;
+      }
+    }
+  }
+
+  .no-more-c {
+    height: 3rem;
+    line-height: 3rem;
+    text-align: center;
+    color: @ctxt;
   }
 
 

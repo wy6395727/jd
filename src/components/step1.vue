@@ -14,40 +14,40 @@
       <tr>
         <td>生产厂家</td>
         <td class="c-td">
-          <mt-field v-model="pagedata.scgc"></mt-field>
+          <mt-field v-model="pagedata.FACTNAME"></mt-field>
         </td>
         <td>验货工厂</td>
         <td class="c-td">
-          <mt-field v-model="pagedata.yhgc"></mt-field>
+          <mt-field v-model="pagedata.YHGC"></mt-field>
         </td>
         <td>船期</td>
         <td class="c-td">
-          <mt-field v-model="pagedata.cq"></mt-field>
+          <mt-field v-model="pagedata.SHIPDATE"></mt-field>
         </td>
         <td>数量</td>
         <td class="c-td">
-          <mt-field v-model="pagedata.sl"></mt-field>
+          <mt-field v-model="pagedata.QTY"></mt-field>
         </td>
       </tr>
       <tr>
         <td>客户</td>
         <td class="c-td">
-          <mt-field v-model="pagedata.kh"></mt-field>
+          <mt-field v-model="pagedata.CUSTNAME"></mt-field>
         </td>
         <td>款号</td>
         <td class="c-td">
-          <mt-field v-model="pagedata.kuanh"></mt-field>
+          <mt-field v-model="pagedata.STYLENO"></mt-field>
         </td>
         <td>Po</td>
         <td class="c-td">
-          <mt-field v-model="pagedata.po"></mt-field>
+          <mt-field v-model="pagedata.PO"></mt-field>
         </td>
         <td colspan="2"></td>
       </tr>
       <tr>
         <td>款式描述</td>
         <td colspan="7">
-          <mt-field v-model="pagedata.ms" type="textarea" rows="2"></mt-field>
+          <mt-field v-model="pagedata.REMARK" type="textarea" rows="2"></mt-field>
         </td>
       </tr>
     </table>
@@ -65,19 +65,19 @@
       </tr>
     </table>
 
-    <table-picture></table-picture>
+    <table-picture :QCITEM="QCITEM"></table-picture>
 
     <table class="c-table">
       <tr>
         <td>评语</td>
         <td class="c-td">
-          <mt-field v-model="pagedata.py" type="textarea"></mt-field>
+          <mt-field v-model="pagedata.COMMENTS" type="textarea"></mt-field>
         </td>
       </tr>
       <tr>
         <td>厂方签字</td>
         <td class="c-td c-td-draw">
-          <div style="width:100%;height:2.5rem;text-align: left;"  @click="openDraw">
+          <div style="width:100%;height:2.5rem;text-align: left;" @click="openDraw">
             <img v-if="drawImageUrl" :src="drawImageUrl" alt="" style="width:5rem;height:100%;">
           </div>
         </td>
@@ -104,88 +104,89 @@
 </template>
 
 <script>
-import TablePicture from "./common/table-picture";
-import CompanyTitle from "./common/company-title";
-import Draw from "./common/draw";
-export default {
-  name: "step1",
-  components:{TablePicture,CompanyTitle,Draw},
-  data() {
-    return {
-      imageUrl: "",
+  import TablePicture from "./common/table-picture";
+  import CompanyTitle from "./common/company-title";
+  import Draw from "./common/draw";
 
-      popupVisible:false,
-      drawImageUrl:'',
-      pagedata: {
-        scgc: "山东摸摸厂胜场",
-        yhgc: "大苏打藏",
-        cq: "12geyue",
-        sl: 123456,
-        kh: "CATOafdhasfjdfasjhstjdstykdtyjdtykdtyjty",
-        kuanh: "123Ip",
-        po: 65544,
-        ms:"sadkahguiew",
+  export default {
+    name: "step1",
+    components: {TablePicture, CompanyTitle, Draw},
+    data() {
+      return {
+//      "QCID":"",
+//      "FACTNAME":"工厂名称",
+//      "CONTRACTNO":"合同号",
+//      "ORDERNO":"订单号",
+//      "YHGC":"验货工厂",
+//      "SHIPDATE":"船期",
+//      "QTY":”数量”,
+//    "CUSTNAME":"客户",
+//      "STYLENO":"款号",
+//      "PO":"PO",
+//      "ZGJYJG":”整个检验结果  0-表示合格 1-表示不合格“,
+//    "ADDTIME":”录入时间”,
+//    "REMARK":"款式描述",
+//      "PERSONQTY":"工厂人数",
+//      "SXRQ":"上线日期",
+//      "RCLQTY":"计划日产量",
+//      "XXRQ":"下线日期",
+//      "COMMENTS":"评语",
+//      "ZJRQ":"质检日期",
+//      "USERNAME":"验货员用户名",
+//      "REALNAME":"验货员真实名",
 
-        py:"",
-        ysy:""
-      }
-    };
-  },
-  created() {},
-  computed: {
-    isPhone(){
-      return isPhone;
+        popupVisible: false,
+        drawImageUrl: '',
+        pagedata: {
+          "FACTNAME": "",
+          "CONTRACTNO": "",  //
+          "ORDERNO": "", //
+          "YHGC": "",
+          "SHIPDATE": "",
+          "QTY": "",
+          "CUSTNAME": "",
+          "STYLENO": "",
+          "PO": "",
+          REMARK:"",
+          COMMENTS:""
+        },
+
+        isModify:false,  //是修改的页面，需要掉接口拿数据
+        QCITEM:[],
+      };
     },
-  },
-  methods: {
-   openDraw(){
-     console.log('draw')
-    this.popupVisible=true;
-   },
-   drawTable(url){
-    this.drawImageUrl=url;
-    this.popupVisible=false;
-   }
-  }
-};
+    created() {
+
+      if(this.isModify){
+        // todo 设置默认值；
+
+      }
+    },
+    computed: {},
+    methods: {
+      submit(){
+
+      },
+
+      openDraw() {
+        console.log('draw')
+        this.popupVisible = true;
+      },
+      drawTable(url) {
+        this.drawImageUrl = url;
+        this.popupVisible = false;
+      }
+    }
+  };
 </script>
 
 <style lang="less">
-@import "../assets/style/var";
+  @import "../assets/style/var";
 
-.c-table {
-  border-collapse: collapse;
-  background-color: #fff;
-  width: 100%;
-  margin-bottom: 1rem;
-  td {
-    border: 1px solid #ddd;
-    text-align: center;
-    min-width: 5rem;
-    line-height: 2rem;
-  }
-  td:not(.c-td) {
-    min-width: 6rem;
-  }
-
-  //reset mint input
-  .mint-cell {
-    background-image: none;
-    background-color:transparent;
-  }
-  .mint-cell-wrapper{
-    background-image: none;
-  }
-  .mint-field-core {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-//reset
- .mint-popup-bottom{
-    width:95%;
-    bottom:3.3rem;
+  //reset
+  .mint-popup-bottom {
+    width: 95%;
+    bottom: 3.3rem;
     border-radius: .8rem;
     background-color: #274236;
   }

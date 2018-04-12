@@ -2,11 +2,12 @@
   <div class="td">
     <el-upload
       class=""
-      action="https://jsonplaceholder.typicode.com/posts/"
+      action="http://report.septnet.cc/Image/uploadImageUrl"
       :show-file-list="false"
       :auto-upload="false"
       :on-change="handlechange"
       :on-success="handlesuccess"
+      :on-error="handleerr"
       :before-upload="beforeAvatarUpload1">
         <img ref="img" v-if="imageUrl" :src="imageUrl" class="img-upload">
         <div v-else>
@@ -32,27 +33,29 @@
         methods: {
           //上傳圖片
           beforeAvatarUpload1(file) {
-            const isJPG = file.type === "image/jpeg";
+            const isImg = file.type.indexOf("image/") == 0;
             const isLt10M = file.size / 1024 / 1024 < 10;
 
             if (!isLt10M) {
               Toast("上传头像图片大小不能超过 10MB!");
             }
-            return isLt10M;
+            if (!isImg) {
+              Toast("图片格式错误!");
+            }
+            return isLt10M&&isImg;
           },
           handlechange(file) {
-            // debugger
             let objURL=URL.createObjectURL(file.raw);
             this.imageUrl = objURL;
-            this.$emit('handlesuccess',this.tdindex);
-
-            this.$refs.img.onload = function(){
-              window.URL.revokeObjectURL(objURL);
-            };
           },
           handlesuccess(response,file) {
-            console.log(file, fileList);
-            this.$emit('handlesuccess',response,this.tdindex);
+//            this.$refs.upload.submit();
+            console.log(file, 'success');
+            let FilePath=response.data.DATAOBJ.FilePath;
+            this.$emit('handlesuccess',FilePath,this.tdindex);
+          },
+          handleerr(err, file){
+            console.log(err)
           }
           //上傳圖片--end
         }
