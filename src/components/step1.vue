@@ -1,6 +1,9 @@
 <template>
-  <div>
-    <mt-header title="">
+  <div style="padding-bottom:60px;padding-top:75px;" >
+    <mt-header 
+    class="mt-header-fixed"
+    title=""
+    >
       <router-link to="/" slot="left">
         <mt-button icon="back">返回</mt-button>
       </router-link>
@@ -65,7 +68,10 @@
       </tr>
     </table>
 
-    <table-picture :QCITEM="QCITEM"></table-picture>
+    <table-picture 
+    ref="tablepicture"
+    :QCITEM="QCITEM"
+    ></table-picture>
 
     <table class="c-table">
       <tr>
@@ -89,6 +95,10 @@
         </td>
       </tr>
     </table>
+
+    <div class="submit-btn">
+      <mt-button type="primary" @click="submitData">{{isModify?"已提交":"提交"}}</mt-button>
+    </div>
 
     <el-dialog
       :width="isPhone?'90%':'40%'"
@@ -148,7 +158,7 @@
           "STYLENO": "",
           "PO": "",
           REMARK:"",
-          COMMENTS:""
+          COMMENTS:"",
         },
 
         isModify:false,  //是修改的页面，需要掉接口拿数据
@@ -164,12 +174,17 @@
     },
     computed: {},
     methods: {
-      submit(){
-
+      async submitData(){
+          //todo push data
+        this.pagedata.QCITEM=this.$refs.tablepicture.imageUrls;
+        let res=await Api.AddQcReportQQ(this.pagedata);
+        if (resData.data.STATUS) {
+          // this.$router.push({name:"home"})
+        }
+            
       },
 
       openDraw() {
-        console.log('draw')
         this.popupVisible = true;
       },
       drawTable(url) {
@@ -181,13 +196,31 @@
 </script>
 
 <style lang="less">
-  @import "../assets/style/var";
+@import "../assets/style/var";
 
-  //reset
-  .mint-popup-bottom {
-    width: 95%;
-    bottom: 3.3rem;
-    border-radius: .8rem;
-    background-color: #274236;
+//reset
+.mint-popup-bottom {
+  width: 95%;
+  bottom: 3.3rem;
+  border-radius: 0.8rem;
+  background-color: #274236;
+}
+//end
+
+.submit-btn{
+  background-color: rgb(216, 220, 226);
+  width:100%;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  padding: 10px;
+  .mint-button{
+    width:30%;
+    height: 40px;
   }
+}
+
+  // .el-dialog__body{
+  //   padding:0!important;
+  // }
 </style>

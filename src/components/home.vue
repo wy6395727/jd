@@ -6,8 +6,9 @@
           class="mintui mintui-back"></i></span> <label class="mint-button-text">用户</label></button>
       </a></div>
       <h1 class="mint-header-title">
-        <button class="mint-button" :class="{active:active==1}">订单信息</button>
-        <button class="mint-button" :class="{active:active==2}">OA信息</button>
+        <button class="mint-button" :class="{active:active==1}" @click="tabhandle(1)">订单信息</button>
+        <button class="mint-button" :class="{active:active==2}" @click="tabhandle(2)">OA信息</button>
+
       </h1>
       <div class="mint-header-button is-right">
         <button class="mint-button" @click="clickSearch"><span class="el-icon-search"></span>
@@ -39,11 +40,11 @@
           <el-col :span="14" class="form-col">
             <span class="lable">IH/日期：</span>
             <el-input @focus="openPicker(1)"
-                      v-model="postForm.Ihdate1"
+                      v-model="postForm.STARTDATE"
                       placeholder="开始日期"></el-input>
             <span style="line-height: 40px;">&nbsp; to &nbsp; </span>
             <el-input @focus="openPicker(2)"
-                      v-model="postForm.Ihdate2"
+                      v-model="postForm.ENDDATE"
                       placeholder="结束日期"></el-input>
           </el-col>
           <el-col :span="5">
@@ -186,7 +187,7 @@
     <mt-datetime-picker
       ref="picker1"
       type="date"
-      v-model="Ihdate1"
+      v-model="STARTDATE"
       year-format="{value} 年"
       month-format="{value} 月"
       date-format="{value} 日"
@@ -196,7 +197,7 @@
     <mt-datetime-picker
       ref="picker2"
       type="date"
-      v-model="Ihdate2"
+      v-model="ENDDATE"
       year-format="{value} 年"
       month-format="{value} 月"
       date-format="{value} 日"
@@ -207,254 +208,265 @@
 </template>
 
 <script>
-  import Vue from 'vue'
-  import Api from '../axios/api'
-  import {Indicator} from "mint-ui"
+import Vue from "vue";
+import Api from "../axios/api";
+import { Indicator } from "mint-ui";
 
-  var self = "";
-  export default {
-    name: 'page-index',
-    components: {},
-    data() {
-      return {
-        active: 1,   //点击切换tab
-        topStatus: '',  //上拉刷状态
-        bottomStatus: '',  //上拉刷状态
-        allLoaded: false,  //下拉加载到最后一页
-        jumpDialog: false, // 跳转弹框
-        searchClicked: false,  //控制搜索菜单可见
+var self = "";
+export default {
+  name: "page-index",
+  components: {},
+  data() {
+    return {
+      active: 1, //点击切换tab  1订单星系， 2OA星系
 
-        total: 0, //数据总量
-        postForm: {
-          PO: "",
-          StyleNo: "",//"款号",
-          FactoryID: "",//"工厂ID",
-          ContractNo: "",//"加工合同",
-          Ihdate1: '',  //起始日期
-          Ihdate2: '', //结束日期
-          PageSize: 10,
-          PageIndex: 1
-        },
-        tableData: []
+      topStatus: "", //上拉刷状态
+      bottomStatus: "", //上拉刷状态
+      allLoaded: false, //下拉加载到最后一页
+      jumpDialog: false, // 跳转弹框
+      searchClicked: false, //控制搜索菜单可见
+
+      total: 0, //数据总量
+      postForm: {
+        PO: "",
+        StyleNo: "", //"款号",
+        FactoryID: "", //"工厂ID",
+        ContractNo: "", //"加工合同",
+        STARTDATE: "", //起始日期
+        ENDDATE: "", //结束日期
+        PageSize: 10,
+        PageIndex: 1
+      },
+      tableData: []
+    };
+  },
+  created() {
+    self = this;
+
+    Indicator.open({
+      text: "加载中...",
+      spinnerType: "fading-circle"
+    });
+    this.fetchData({ isMore: false }).then(() => {
+      Indicator.close();
+    });
+  },
+  computed: {
+    STARTDATE() {
+      if (this.postForm.STARTDATE != "") {
+        return new Date(this.postForm.STARTDATE);
+      } else {
+        return new Date();
       }
     },
-    created() {
-      self = this;
-
-      Indicator.open({
-        text: '加载中...',
-        spinnerType: 'fading-circle'
-      });
-      this.fetchData({isMore: false}).then(() => {
-        Indicator.close();
-      })
-    },
-    computed: {
-      isPhone() {
-        return isPhone;
-      },
-      Ihdate1() {
-        if (this.postForm.Ihdate1 != '') {
-          return new Date(this.postForm.Ihdate1)
-        } else {
-          return new Date();
-        }
-      },
-      Ihdate2() {
-        if (this.postForm.Ihdate2 != '') {
-          return new Date(this.postForm.Ihdate2)
-        } else {
-          return new Date();
-        }
-      },
-    },
-    methods: {
-      async fetchData({isMore}) {
-        //ismore 下拉true ，刷新false
-        let resData = await Api.GetSearchMakeContractList(this.postForm);
-        if (resData.data.STATUS) {
-          if (isMore) {
-            resData.data.DATAOBJ.ITEM.forEach(item => {
-              this.tableData.push(item);
-            });
-          } else {
-            this.tableData = resData.data.DATAOBJ.ITEM;
-          }
-          this.total = resData.data.DATAOBJ.TOTAL;
-          console.log(this.tableData)
-          console.log(this.total)
-        }
-
-        return;
-      },
-      loadTop() {
-        // 下拉刷新
-        this.postForm.PageIndex = 1;
-        this.fetchData({isMore: false});
-        this.$refs.loadmore.onTopLoaded();
-      },
-      loadBottom() {
-        // 加载更多数据
-        if (this.tableData.length < this.total) {
-          this.postForm.PageIndex += 1;
-          this.fetchData({isMore: true});
-        } else {
-          this.allLoaded = true;// 若数据已全部获取完毕
-        }
-//        this.$refs.loadmore.onBottomLoaded();
-      },
-      handleTopChange(status) {
-        this.topStatus = status;
-      },
-      handleBottomChange(status) {
-        this.bottomStatus = status;
-      },
-
-      clickSearch() {
-        this.searchClicked = !this.searchClicked;
-      },
-      searchHandle() {
-        this.postForm.PageIndex = 1;
-        this.fetchData();
-      },
-      resetHandle() {
-        this.postForm.PO = "";
-        this.postForm.StyleNo = "";
-        this.postForm.FactoryID = "";
-        this.postForm.ContractNo = "";
-        this.postForm.Ihdate1 = "";
-        this.postForm.Ihdate2 = "";
-        this.postForm.PageSize = 10;
-        this.postForm.PageIndex = 1;
-      },
-      openPicker(n) {
-        let key = 'picker' + n;
-        this.$refs[key].open();
-      },
-      handleConfirm1(time) {
-        if (time) {
-          this.postForm.Ihdate1 = time.toLocaleDateString();
-        }
-      },
-      handleConfirm2(time) {
-        if (time) {
-          this.postForm.Ihdate2 = time.toLocaleDateString();
-        }
-      },
-      handleClick(row) {
-        console.log(row);
-        this.jumpDialog = true;
-      },
-      leavehandle(e) {
-        //  一旦滚动了table 关闭检索框
-        this.searchClicked=false;
-        console.log(e)
+    ENDDATE() {
+      if (this.postForm.ENDDATE != "") {
+        return new Date(this.postForm.ENDDATE);
+      } else {
+        return new Date();
       }
     }
-  }
+  },
+  methods: {
+    async fetchData({ isMore =false }) {
+      //ismore 下拉true ，刷新false
+      console.log(isMore)
+      let resData;
+      if (this.active == 1) {
+        resData = await Api.GetSearchMakeContractList(this.postForm);
+      } else {
+        resData = await Api.GetSearchQcReportContractList(this.postForm);
+      }
+      if (resData.data.STATUS) {
+        if (isMore) {
+          resData.data.DATAOBJ.ITEM.forEach(item => {
+            this.tableData.push(item);
+          });
+        } else {
+          this.tableData = resData.data.DATAOBJ.ITEM;
+        }
+        this.total = resData.data.DATAOBJ.TOTAL;
+        console.log(this.tableData);
+        console.log(this.total);
+      }
+      return;
+    },
+    tabhandle(active){
+      this.active=active;
+      this.searchClicked=false;
+      this.resetHandle();
+      this.fetchData({isMore:false});
+    },
+    loadTop() {
+      // 下拉刷新
+      this.postForm.PageIndex = 1;
+      this.fetchData({ isMore: false });
+      this.$refs.loadmore.onTopLoaded();
+    },
+    loadBottom() {
+      // 加载更多数据
+      if (this.tableData.length < this.total) {
+        this.postForm.PageIndex += 1;
+        this.fetchData({ isMore: true });
+      } else {
+        this.allLoaded = true; // 若数据已全部获取完毕
+      }
+      //        this.$refs.loadmore.onBottomLoaded();
+    },
+    handleTopChange(status) {
+      this.topStatus = status;
+    },
+    handleBottomChange(status) {
+      this.bottomStatus = status;
+    },
 
+    clickSearch() {
+      this.searchClicked = !this.searchClicked;
+    },
+    searchHandle() {
+      this.postForm.PageIndex = 1;
+      this.fetchData({isMore:false});
+    },
+    resetHandle() {
+      this.postForm.PO = "";
+      this.postForm.StyleNo = "";
+      this.postForm.FactoryID = "";
+      this.postForm.ContractNo = "";
+      this.postForm.STARTDATE = "";
+      this.postForm.ENDDATE = "";
+      this.postForm.PageSize = 10;
+      this.postForm.PageIndex = 1;
+    },
+    openPicker(n) {
+      let key = "picker" + n;
+      this.$refs[key].open();
+    },
+    handleConfirm1(time) {
+      if (time) {
+        this.postForm.STARTDATE = time.toLocaleDateString();
+      }
+    },
+    handleConfirm2(time) {
+      if (time) {
+        this.postForm.ENDDATE = time.toLocaleDateString();
+      }
+    },
+    handleClick(row) {
+      console.log(row);
+      this.jumpDialog = true;
+    },
+    leavehandle(e) {
+      //  一旦滚动了table 关闭检索框
+      this.searchClicked = false;
+      console.log(e);
+    }
+  }
+};
 </script>
 
 <style lang="less">
-  @import "../assets/style/var";
+@import "../assets/style/var";
 
-  .mint-header-title {
-    & > button {
-      height: 80%;
-      font-size: 1.2rem;
-      background-color: transparent;
-      color: #ffffff;
-      border: none;
-      &:active, &:focus {
-        border-bottom: 4px solid #ffffff;
-      }
+.mint-header-title {
+  & > button {
+    box-sizing: border-box;
+    height: 80%;
+    font-size: 1.2rem;
+    background-color: transparent;
+    color: #ffffff;
+    border: none;
+    &.active{
+      border-bottom: 4px solid #ffffff;
     }
   }
+}
 
-  .search-dialog {
-    position: absolute;
-    top: @header-height;
-    left: 0px;
-    z-index: 2000;
-    background-color: #fff;
-    padding: 15px;
-    border-bottom: 1px solid #eeeeee;
-  }
+.search-dialog {
+  position: absolute;
+  top: @header-height;
+  left: 0px;
+  z-index: 2000;
+  background-color: #fff;
+  padding: 15px;
+  border-bottom: 1px solid #eeeeee;
+}
 
-  .form-row {
-    text-align: left;
-    padding-right: 10px;
-    .form-col {
-      display: flex;
-    }
-    .lable {
-      /*width: 100px;*/
-      line-height: 40px;
-    }
-    .el-input {
-      /*display: inline-block;*/
-      flex: 1;
-    }
-  }
-
-  .move-enter-active, .move-leave-active {
-    transition: all .5s;
-  }
-
-  .move-enter, .move-leave-to {
-    opacity: 0;
-    top: 0;
-    transform: scale(0.3, 0.5);
-  }
-
-  .dialog-title {
-    position: relative;
-    .dialog-icon {
-      position: absolute;
-      left: 1rem;
-      color: @theme;
-    }
-  }
-
-  .jump-wrap {
-    font-size: 1rem;
-  }
-
-  .jump-div {
-    color: @mtxt;
+.form-row {
+  text-align: left;
+  padding-right: 10px;
+  .form-col {
     display: flex;
-    justify-content: space-between;
-    padding: .25rem 1rem;
-    .jump-status {
-      font-size: .8rem;
+  }
+  .lable {
+    /*width: 100px;*/
+    line-height: 40px;
+  }
+  .el-input {
+    /*display: inline-block;*/
+    flex: 1;
+  }
+}
+
+.move-enter-active,
+.move-leave-active {
+  transition: all 0.5s;
+  transform-origin:100% 50%;
+}
+
+.move-enter,
+.move-leave-to {
+  opacity: 0;
+  top: 0;
+  transform: scale(0.3, 0.5);
+}
+
+.dialog-title {
+  position: relative;
+  .dialog-icon {
+    position: absolute;
+    left: 1rem;
+    color: @theme;
+  }
+}
+
+.jump-wrap {
+  font-size: 1rem;
+}
+
+.jump-div {
+  color: @mtxt;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 1rem;
+  .jump-status {
+    font-size: 0.8rem;
+  }
+}
+
+.loadmore-wrapper {
+  height: calc(~"100vh - " @header-height);
+  overflow: scroll;
+}
+
+.mint-loadmore-top,
+.mint-loadmore-bottom {
+  span {
+    display: inline-block;
+    vertical-align: middle;
+
+    &.rotate {
+      -webkit-transform: rotate(180deg);
+      transform: rotate(180deg);
+      -webkit-transition: 0.2s linear;
+      transition: 0.2s linear;
     }
   }
+}
 
-  .loadmore-wrapper {
-    height: calc(~"100vh - " @header-height);
-    overflow: scroll;
-  }
-
-  .mint-loadmore-top, .mint-loadmore-bottom {
-    span {
-      display: inline-block;
-      vertical-align: middle;
-
-      &.rotate {
-        -webkit-transform: rotate(180deg);
-        transform: rotate(180deg);
-        -webkit-transition: .2s linear;
-        transition: .2s linear;
-      }
-    }
-  }
-
-  .no-more-c {
-    height: 3rem;
-    line-height: 3rem;
-    text-align: center;
-    color: @ctxt;
-  }
-
-
+.no-more-c {
+  height: 3rem;
+  line-height: 3rem;
+  text-align: center;
+  color: @ctxt;
+}
 </style>

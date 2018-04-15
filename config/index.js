@@ -11,22 +11,11 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/ReportManage':{
-        target:"http://localhost:53974",
+      '/api':{
+        target:"http://qctest.jade-fashion.com",
+        changeOrigin: true,
         pathRewrite: {
-          '^/ReportManage': 'ReportManage'
-        }
-      },
-      '/Image':{
-        target:"http://localhost:53974",
-        pathRewrite: {
-          '^/Image': 'Image'
-        }
-      },
-      '/Login':{
-        target:"http://localhost:53974",
-        pathRewrite: {
-          '^/Login': 'Login'
+          '^/api': 'api'
         }
       },
     },

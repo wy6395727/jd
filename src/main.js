@@ -28,7 +28,7 @@ Vue.use(Select)
 Vue.use(Option)
 
 // 引入mockjs
-require('./mock')
+// require('./mock')
 
 Vue.mixin({
   data: function () {

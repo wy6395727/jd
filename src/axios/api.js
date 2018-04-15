@@ -16,13 +16,23 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded
 // }
 
 export default {
-  //获取报表列表
+  //weijanyanguo  api/qcservice/GetSearchMakeContractList
   GetSearchMakeContractList(data) {
-    return axios.post('/api/GetSearchMakeContractList', data);
+    return axios.post('/api/qcservice/GetSearchMakeContractList', data);
+  },
+
+  //以检验过得外发
+  GetSearchQcReportContractList(data) {
+    return axios.post('/api/qcservice/GetSearchQcReportContractList', data);
+  },
+
+  //添加前期報告
+  AddQcReportQQ(data) {
+    return axios.post('/api/qcservice/AddQcReportQQ', data);
   },
 
   //上传文件
   UpLoadImg(data) {
-    return axios.post('/api/GetSearchMakeContractList', data);
+    return axios.post('/api/qcservice/UpLoadImg', data);
   },
 }

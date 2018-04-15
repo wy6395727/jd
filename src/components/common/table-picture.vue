@@ -1,7 +1,7 @@
 <template>
      <table class="c-table">
       <tr v-for="(title,i) in titles" :key="title.key">
-        <td class="w8rem">{{title}}{{i}}</td>
+        <td class="w8rem">{{title}}</td>
         <td>
           <table style="width:100%; ">
             <tr height="90">
@@ -32,10 +32,10 @@
               <mt-field v-model="imageUrls[i].ImgItem[0].PSSJ"></mt-field>
             </td>
             <td class="c-td">
-              <mt-field v-model="imageUrls[i].ImgItem[0].PSSJ"></mt-field>
+              <mt-field v-model="imageUrls[i].ImgItem[1].PSSJ"></mt-field>
             </td>
             <td class="c-td">
-              <mt-field v-model="imageUrls[i].ImgItem[0].PSSJ"></mt-field>
+              <mt-field v-model="imageUrls[i].ImgItem[2].PSSJ"></mt-field>
             </td>
           </tr>
           <tr>
@@ -44,10 +44,10 @@
               <mt-field v-model="imageUrls[i].ImgItem[0].PSDD"></mt-field>
             </td>
             <td class="c-td">
-              <mt-field v-model="imageUrls[i].ImgItem[0].PSDD"></mt-field>
+              <mt-field v-model="imageUrls[i].ImgItem[1].PSDD"></mt-field>
             </td>
             <td class="c-td">
-              <mt-field v-model="imageUrls[i].ImgItem[0].PSDD"></mt-field>
+              <mt-field v-model="imageUrls[i].ImgItem[2].PSDD"></mt-field>
             </td>
           </tr>
           </table>

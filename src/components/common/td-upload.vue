@@ -2,9 +2,9 @@
   <div class="td">
     <el-upload
       class=""
-      action="http://report.septnet.cc/Image/uploadImageUrl"
+      action="http://qctest.jade-fashion.com/api/qcservice/UpLoadImg"
       :show-file-list="false"
-      :auto-upload="false"
+      :http-request="httpRequest"
       :on-change="handlechange"
       :on-success="handlesuccess"
       :on-error="handleerr"
@@ -18,66 +18,84 @@
   </div>
 </template>
 <script>
-    export default {
-        components: {},
-        name: 'td-upload',
-        props:['tdindex'],
-        data() {
-            return {
-              imageUrl:''
-            }
-        },
-        created() {
+import Api from "@/axios/api";
 
-        },
-        methods: {
-          //上傳圖片
-          beforeAvatarUpload1(file) {
-            const isImg = file.type.indexOf("image/") == 0;
-            const isLt10M = file.size / 1024 / 1024 < 10;
+export default {
+  components: {},
+  name: "td-upload",
+  props: ["tdindex"],
+  data() {
+    return {
+      imageUrl: ""
+    };
+  },
+  created() {},
+  methods: {
+    //上傳圖片
+     httpRequest(item) {
+      // let formData = new FormData();
+      // let base64Data;
+      // formData.append('ImgBase64', base64Data);
+      let reader = new FileReader();
+      reader.readAsDataURL(item.file);
+      reader.onloadend = function() {
+        // formData.append("ImgBase64", reader.result);
+        console.log(reader.result)
+        Api.UpLoadImg({ImgBase64:reader.result})
+          .then(res => {
+            console.log(res);
+          })
+          .catch(err => console.log(err));
+      };
+      // console.log('上传图片接口-参数', item.file, base64Data);
+    },
+    beforeAvatarUpload1(file) {
+      const isImg = file.type.indexOf("image/") == 0;
+      const isLt10M = file.size / 1024 / 1024 < 10;
 
-            if (!isLt10M) {
-              Toast("上传头像图片大小不能超过 10MB!");
-            }
-            if (!isImg) {
-              Toast("图片格式错误!");
-            }
-            return isLt10M&&isImg;
-          },
-          handlechange(file) {
-            let objURL=URL.createObjectURL(file.raw);
-            this.imageUrl = objURL;
-          },
-          handlesuccess(response,file) {
-//            this.$refs.upload.submit();
-            console.log(file, 'success');
-            let FilePath=response.data.DATAOBJ.FilePath;
-            this.$emit('handlesuccess',FilePath,this.tdindex);
-          },
-          handleerr(err, file){
-            console.log(err)
-          }
-          //上傳圖片--end
-        }
+      if (!isLt10M) {
+        Toast("上传头像图片大小不能超过 10MB!");
+      }
+      if (!isImg) {
+        Toast("图片格式错误!");
+      }
+      return isLt10M && isImg;
+    },
+    handlechange(file) {
+      let objURL = URL.createObjectURL(file.raw);
+      console.log(objURL)
+      this.imageUrl = objURL;
+    },
+    handlesuccess(response, file) {
+      //            this.$refs.upload.submit();
+      console.log(file, "success");
+      let FilePath = response.data.DATAOBJ.FilePath;
+      this.$emit("handlesuccess", FilePath, this.tdindex);
+    },
+    handleerr(err, file) {
+      console.log(err);
     }
+    //上傳圖片--end
+  }
+};
 </script>
 <style lang="less" scoped>
-  @import "../../assets/style/var";
+@import "../../assets/style/var";
 
-  .avatar-uploader-icon {
-    font-size: 1.5rem;
-    color: #8c939d;
-    width: 2rem;
-    height: 2rem;
-    line-height: 2rem;
-    text-align: center;
-  }
-  .el-plus-span {
-    color: @ctxt;
-  }
-  .img-upload {
-    width: 100%;
-    height: 5rem;
-    display: block;
-  }
+.avatar-uploader-icon {
+  font-size: 1.5rem;
+  color: #8c939d;
+  width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
+  text-align: center;
+}
+.el-plus-span {
+  color: @ctxt;
+}
+.img-upload {
+  width: 100%;
+  height: 5rem;
+  display: block;
+}
 </style>
