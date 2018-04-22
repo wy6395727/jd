@@ -31,8 +31,32 @@ export default {
     return axios.post('/api/qcservice/AddQcReportQQ', data);
   },
 
+  //添加中期、尾期報告
+  AddQcReport(data) {
+    return axios.post('/api/qcservice/AddQcReport', data);
+  },
+
+  //获取 前期報告
+  GetQcReportQQInfo(data){
+    return axios.post('/api/qcservice/GetQcReportQQInfo', data);
+  },
+
+  //获取 中期、尾期報告
+  GetQcReportInfo(data){
+    return axios.post('/api/qcservice/GetQcReportInfo', data);
+  },
+
   //上传文件
   UpLoadImg(data) {
     return axios.post('/api/qcservice/UpLoadImg', data);
+  },
+
+  //根据查询条件获取已质检过的加工合同信息分页
+  GetQCReportCountList(data) {
+    return axios.post('/api/qcservice/GetQCReportCountList ', data);
+  },
+
+  Login(data){
+    return axios.post('/api/qcservice/Login ', data);
   },
 }

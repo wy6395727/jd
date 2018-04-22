@@ -1,8 +1,8 @@
 <template>
-  <header class="company-title">
-    <div>捷得服饰（上海）有限公司品质质检报告（前期）</div>
+  <div class="company-title">
+    <div>捷得服饰（上海）有限公司品质质检报告（<slot name="txt"></slot>）</div>
     <div>Jade Fashion&CO.INC</div>
-  </header>
+  </div>
 </template>
 <script>
     export default {

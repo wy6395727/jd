@@ -1,10 +1,12 @@
-body{
+@import "var";
+
+body {
   margin: 0px;
   background-color: rgba(226, 230, 238, 0.29);
 }
 
 //工具类
-.clearFix{
+.clearFix {
   &:after {
     content: ".";
     display: block;
@@ -14,53 +16,86 @@ body{
   }
 }
 
- .mt-header-fixed{
-    position: fixed;
-    width:100%;
-    z-index: 10000;
-    top:0;
- }
+.step-page {
+  padding: 3.5rem 0;
+}
 
-.c-table {  //自己定义table
+.mt-header-fixed {
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  top: 0;
+}
+
+.submit-btn {
+  background-color: rgb(216, 220, 226);
+  width: 100%;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  padding: 10px;
+  .mint-button {
+    width: 30%;
+    height: 40px;
+  }
+}
+
+.c-table { //自己定义table
   border-collapse: collapse;
   background-color: #fff;
   width: 100%;
+  color: @dtxt;
+  font-size: .8rem;
   margin-bottom: 1rem;
   td {
+    padding: 12px 0;
     border: 1px solid #ddd;
     text-align: center;
     min-width: 5rem;
-    line-height: 2rem;
+    height: 3rem;
+    //line-height: 2rem;
   }
   td:not(.c-td) {
     min-width: 6rem;
   }
+  td.c-td {
+    padding:12px 10px;
+  }
   //reset mint input
   .mint-cell {
     background-image: none;
-    background-color:transparent;
+    background-color: transparent;
+
+    border:1px solid @bor3;
   }
-  .mint-cell-wrapper{
+  .mint-cell-wrapper {
     background-image: none;
   }
   .mint-field-core {
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  .mint-field-clear{
+    position: absolute;
+    right: 3px;
+  }
 }
-.table-titile{
+
+.table-titile {
   padding: .3rem 1rem;
   font-size: .8rem;
   line-height: 1rem;
   background-color: #e0ebf9;
-  .mint-badge.is-size-small{
+  .mint-badge.is-size-small {
     box-sizing: border-box;
     font-size: .5rem;
     margin-right: 5px;
     width: 24px;
   }
 }
-.table-btn{   //table下的btn
+
+.table-btn { //table下的btn
   text-align: right;
   padding: 1rem;
   margin-top: -1rem;

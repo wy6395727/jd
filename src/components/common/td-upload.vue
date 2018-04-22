@@ -3,13 +3,15 @@
     <el-upload
       class=""
       action="http://qctest.jade-fashion.com/api/qcservice/UpLoadImg"
+      accept="image/*" capture="camera"
       :show-file-list="false"
       :http-request="httpRequest"
       :on-change="handlechange"
-      :on-success="handlesuccess"
-      :on-error="handleerr"
-      :before-upload="beforeAvatarUpload1">
-        <img ref="img" v-if="imageUrl" :src="imageUrl" class="img-upload">
+      :before-upload="beforeAvatarUpload1"
+      :on-preview="handlePictureCardPreview"
+      :disabled="isDisable"
+    >
+        <img ref="img" v-if="imageUrl" :src="fullImageUrl" class="img-upload">
         <div v-else>
           <i class  ="el-icon-plus avatar-uploader-icon"></i>
           <span class="el-plus-span">上传图片</span>
@@ -19,17 +21,44 @@
 </template>
 <script>
 import Api from "@/axios/api";
-
+var self;
 export default {
   components: {},
   name: "td-upload",
-  props: ["tdindex"],
+  props:{
+    tdindex:{
+      type:Object
+    },
+    imgpath:{
+      type:String
+    },
+    isDisable:{
+      type:Boolean,
+      default:false
+    }
+  },
   data() {
     return {
-      imageUrl: ""
+      imageUrl: "",
+      dialogVisible:false
     };
   },
-  created() {},
+  created() {
+    self=this;
+
+    if(this.imgpath&&this.imgpath!=""){
+      this.imageUrl=this.imgpath;  //todo
+    }
+  },
+  computed:{
+    fullImageUrl(){
+      if(this.imageUrl.indexOf("blob")!=-1){
+        return this.imageUrl;
+      }else{
+        return `/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
+      }
+    }
+  },
   methods: {
     //上傳圖片
      httpRequest(item) {
@@ -37,13 +66,16 @@ export default {
       // let base64Data;
       // formData.append('ImgBase64', base64Data);
       let reader = new FileReader();
+      let that=this;
       reader.readAsDataURL(item.file);
       reader.onloadend = function() {
         // formData.append("ImgBase64", reader.result);
         console.log(reader.result)
         Api.UpLoadImg({ImgBase64:reader.result})
           .then(res => {
-            console.log(res);
+//            let FilePath = res.data.DATAOBJ.FilePath;
+//            self.$emit("handlesuccess", FilePath, self.tdindex);
+            that.handlesuccess(res);
           })
           .catch(err => console.log(err));
       };
@@ -66,14 +98,15 @@ export default {
       console.log(objURL)
       this.imageUrl = objURL;
     },
-    handlesuccess(response, file) {
+    handlesuccess(response) {
       //            this.$refs.upload.submit();
-      console.log(file, "success");
       let FilePath = response.data.DATAOBJ.FilePath;
       this.$emit("handlesuccess", FilePath, this.tdindex);
     },
-    handleerr(err, file) {
-      console.log(err);
+
+    handlePictureCardPreview(file){
+      this.dialogVisible = true;
+       debugger
     }
     //上傳圖片--end
   }

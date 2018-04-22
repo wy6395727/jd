@@ -6,7 +6,7 @@ Vue.use(Router);
 const Home = resovle => require(['../components/home'], resovle);
 const Step1 = resovle => require(['../components/step1'], resovle);
 const Step2 = resovle => require(['../components/step2'], resovle);
-const Step3 = resovle => require(['../components/step3'], resovle);
+const Login = resovle => require(['../components/login'], resovle);
 
 
 const ttt = resovle => require(['../components/ttt'], resovle);
@@ -22,6 +22,7 @@ export default new Router({
 
     {
       path: '/',
+      name:"home",
       component: Home
     },
     {
@@ -35,9 +36,9 @@ export default new Router({
       component: Step2
     },
     {
-      path: '/step3',
-      name:'step3',
-      component: Step3
+      path: '/login',
+      name:'login',
+      component: Login
     }
   ]
 })
