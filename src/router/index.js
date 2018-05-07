@@ -12,16 +12,21 @@ const Login = resovle => require(['../components/login'], resovle);
 const ttt = resovle => require(['../components/ttt'], resovle);
 
 
+
 export default new Router({
   routes: [
     {
-      path: '/ttt',
-      component: ttt
+      path:"/",
+      redirect:"/login"
+    },
+    {
+      path: '/login',
+      name:'login',
+      component: Login
     },
 
-
     {
-      path: '/',
+      path: '/home',
       name:"home",
       component: Home
     },
@@ -35,10 +40,6 @@ export default new Router({
       name:'step2',
       component: Step2
     },
-    {
-      path: '/login',
-      name:'login',
-      component: Login
-    }
+
   ]
 })

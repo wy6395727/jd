@@ -50,24 +50,23 @@
       self = this;
     },
     methods: {
-       async loginMethod(formName) {
+       loginMethod(formName) {
 
-        this.$refs[formName].validate(async (valid) => {
+        this.$refs[formName].validate((valid) => {
           if(valid){
-            const res=await Api.Login({name: this.loginForm.username, password: this.loginForm.password});
-
+            Api.Login({name: this.loginForm.username, password: this.loginForm.password}).then(res=>{
               if (res.data.STATUS == 1) {
                 self.$store.commit("LOGIN_UP",res.data.DATAOBJ);
-                if(self.$route.query.redirect){v
+                if(self.$route.query.redirect){
                   let redirect=self.$route.query.redirect;
                   self.$router.push({path:redirect});
                 }else{
-                  self.$router.push({path:"/"});
+                  self.$router.push({name:"home"});
                 }
               }else{
                 Toast(res.data.MESSAGE)
               }
-
+            });
           }else{
             Toast('用户名或密码格式错误');
             return false;

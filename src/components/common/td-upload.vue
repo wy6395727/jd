@@ -45,9 +45,15 @@ export default {
   },
   created() {
     self=this;
-
     if(this.imgpath&&this.imgpath!=""){
-      this.imageUrl=this.imgpath;  //todo
+      this.imageUrl=this.imgpath;
+    }
+  },
+  watch:{
+    imgpath(v,oV){
+      if(this.imgpath&&this.imgpath!=""){
+        this.imageUrl=this.imgpath;  //todo
+      }
     }
   },
   computed:{
@@ -55,7 +61,11 @@ export default {
       if(this.imageUrl.indexOf("blob")!=-1){
         return this.imageUrl;
       }else{
-        return `/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
+        if(process.env.NODE_ENV == "development"){
+          return `/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
+        }else{
+          return `http://qctest.jade-fashion.com/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
+        }
       }
     }
   },
@@ -106,7 +116,6 @@ export default {
 
     handlePictureCardPreview(file){
       this.dialogVisible = true;
-       debugger
     }
     //上傳圖片--end
   }

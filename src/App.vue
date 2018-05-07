@@ -10,7 +10,7 @@
 export default {
   name: 'app',
   created(){
-
+    console.log(process.env)
   },
   methods:{
   },

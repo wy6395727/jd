@@ -1,7 +1,7 @@
 <template>
   <div class="step-page">
     <mt-header class="mt-header-fixed" :title="`${getNAME}订单详情`">
-      <router-link to="/" slot="left">
+      <router-link to="/home" slot="left">
         <mt-button icon="back">返回</mt-button>
       </router-link>
 
@@ -23,8 +23,7 @@
         <tr>
           <td>检验结果</td>
           <td class="c-td">
-            <!--<mt-field v-model="pagedata.ZGJYJG"></mt-field>-->
-            <span>{{pagedata.ZGJYJG | checkResult}}</span>
+            <span class="c-td-span">{{ZGJYJG}}</span>
           </td>
           <td>客户</td>
           <td class="c-td">
@@ -66,7 +65,7 @@
         <tr>
           <td>裁剪<br>cutting</td>
           <td class="c-td">
-            <mt-field :disabled="isDisable" v-model="pagedata.CUTTING" type="number" disabled></mt-field>
+            <mt-field :disabled="isDisable" v-model="pagedata.CUTTING" type="number"></mt-field>
           </td>
           <td>缝制<br> sewing</td>
           <td class="c-td">
@@ -178,6 +177,8 @@
             <!--<mt-field v-model="pagedata.QCSIZETABLE.AQL"></mt-field>-->
             <el-select :disabled="isDisable" v-model="pagedata.QCSIZETABLE.AQL" placeholder="请选择"
                        @change="changeSIZEAQL">
+              <el-option label="1.5" :value="1.5"></el-option>
+              <el-option label="2.5" :value="2.5"></el-option>
               <el-option label="4.0" :value="4.0"></el-option>
               <el-option label="6.5" :value="6.5"></el-option>
             </el-select>
@@ -206,6 +207,12 @@
           </td>
         </tr>
         <tr>
+          <td>检验结果</td>
+          <td class="c-td" colspan="5">
+            <span class="c-td-span">{{CMJYJG | passOrFail}}</span>
+          </td>
+        </tr>
+        <tr>
           <td>尺寸表</td>
           <td class="c-td" colspan="5">
             <td-upload :isDisable="isDisable"
@@ -220,11 +227,11 @@
         </tr>
       </table>
 
-      <el-row :gutter="30">
-        <el-col :span="12">
+      <el-row >
+        <el-col :span="12" style="padding-right: 10px;">
           <div class="table-titile">
             <mt-badge size="small" color="#36b101">Ⅳ</mt-badge>
-            <span>测试结果</span>
+            <span>面料和成衣测试结果</span>
           </div>
           <table class="c-table">
             <tr>
@@ -248,7 +255,8 @@
                     v-for="item in mlOptions"
                     :key="item.value"
                     :label="item.label"
-                    :value="item.value">
+                    :value="item.value"
+                  >
                   </el-option>
                 </el-select>
               </td>
@@ -256,13 +264,13 @@
             <tr>
               <td>检验结果</td>
               <td class="c-td">
-                <mt-field :disabled="isDisable" v-model="pagedata.MCCSJYJG"></mt-field>
-                <!--<span class="c-td-span">{{pagedata.MCCSJYJG}}</span>-->
+                <!--<mt-field :disabled="isDisable" v-model="pagedata.MCCSJYJG"></mt-field>-->
+                <span class="c-td-span">{{MCCSJYJG }}</span>
               </td>
             </tr>
           </table>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="12" style="padding-left: 10px">
           <div class="table-titile">
             <mt-badge size="small" color="#36b101">Ⅵ</mt-badge>
             <span>针数/克重 （针对指针毛衫类）</span>
@@ -297,7 +305,7 @@
             <tr>
               <td>检验结果</td>
               <td class="c-td">
-                <mt-field :disabled="isDisable" v-model="pagedata.ZSCSJYJG"></mt-field>
+                <span class="c-td-span">{{ZSCSJYJG }}</span>
               </td>
             </tr>
           </table>
@@ -315,33 +323,30 @@
             <el-select :disabled="isDisable" v-model="pagedata.KSAQL" @change="changeKSAQL" placeholder="请选择">
               <el-option label="1.5" :value="1.5"></el-option>
               <el-option label="2.5" :value="2.5"></el-option>
-              <el-option label="4" :value="4"></el-option>
+              <el-option label="4.0" :value="4.0"></el-option>
+              <el-option label="6.5" :value="6.5"></el-option>
             </el-select>
           </td>
           <td>检验结果</td>
           <td class="c-td">
-            <span>不合格</span>
+            <span class="c-td-span">{{KSJYJG | passOrFail}}</span>
           </td>
           <td>接受率QIR</td>
           <td class="c-td">
-            <!--<mt-field v-model="pagedata.KSCCSL"></mt-field>-->
             <span class="c-td-span">{{pagedata.KSJSL}}</span>
           </td>
         </tr>
         <tr>
           <td>抽查数量<br>QTY,inspected</td>
           <td class="c-td">
-            <!--<mt-field v-model="pagedata.KSCCSL"></mt-field>-->
             <span class="c-td-span">{{pagedata.KSCCSL}}</span>
           </td>
           <td>PTS接受</td>
           <td class="c-td">
-            <!--<mt-field v-model="pagedata.KSJS"></mt-field>-->
             <span class="c-td-span">{{pagedata.KSJS}}</span>
           </td>
           <td>PTS不接受</td>
           <td class="c-td">
-            <!--<mt-field v-model="pagedata.KSJSBJ"></mt-field>-->
             <span class="c-td-span">{{pagedata.KSJSBJ}}</span>
           </td>
         </tr>
@@ -516,7 +521,7 @@
       <table-picture
         ref="tablepicture"
         :titles="QCPACKIMGTitle"
-        :QCITEM="pagedata.QCPACKIMGLIST"
+        :QCITEM="QCPACKIMGLIST"
         :isDisable="isDisable"
       ></table-picture>
 
@@ -539,7 +544,7 @@
           <td>验收员</td>
           <td class="c-td">
             <!--<mt-field v-model="pagedata.USERNAME"></mt-field>-->
-            <span class="c-td-span">{{pagedata.USERNAME}}</span>
+            <span class="c-td-span">{{pagedata.QCNAME}}</span>
           </td>
         </tr>
       </table>
@@ -701,19 +706,19 @@
           "PRESSING": "",//”整烫数”,
           "PACKQTY": "",//”包装数”,
           "ADDTIME": "",//”录入时间”,
-          "FABSTATUS": 3,//”测试结果--面料 0--未操作  1-对 2-错  3-N/A”,
-          "CYSTATUS": 3,//”测试结果--成衣 0--未操作   1-对 2-错  3-N/A”,
-          "MCCSJYJG": "",//”面料和成衣测试结果--检验结果 0--未检测   1-合格 2-不合格”,
-          "STITCH": 3,//”测试结果--针数  0--未操作   1-对 2-错  3-N/A”,
-          "WEIGHT": 3,//”测试结果--克重   0--未操作   1-对 2-错  3-N/A”,
-          "ZSCSJYJG": "",//”针数测试结果--检验结果 0--未检测   1-合格 2-不合格”,
+          "FABSTATUS": 0,//”测试结果--面料 0--未操作  1-对 2-错  3-N/A”,
+          "CYSTATUS": 0,//”测试结果--成衣 0--未操作   1-对 2-错  3-N/A”,
+          "MCCSJYJG": 0,//”面料和成衣测试结果--检验结果 0--未检测   1-合格 2-不合格”,
+          "STITCH": 0,//”测试结果--针数  0--未操作   1-对 2-错  3-N/A”,
+          "WEIGHT": 0,//”测试结果--克重   0--未操作   1-对 2-错  3-N/A”,
+          "ZSCSJYJG": 0,//”针数测试结果--检验结果 0--未检测   1-合格 2-不合格”,
           "KSAQL": "",//"可视检验--AQL",
           "KSJSL": "",//"可视接受率QIR",  //todo
           "KSJSBJ": "",//"可视接受标准",
           "KSBJS": "",//"可视不接受PTS",  //todo
           "KSJS": "",//"可视接受PTS",
           "KSCCSL": "",//"可视抽查数量",
-          "KSJYJG": "",//"可视检验结果  0--未检测   1-合格 2-不合格",  //todo
+          "KSJYJG": 0,//"可视检验结果  0--未检测   1-合格 2-不合格",
 
           "ZXCM": "",//"纸箱尺码",
           "ZTZ": "",//"粘贴纸",
@@ -721,14 +726,14 @@
           "MARK": "",//"箱麦",
           "JDPZ": "",//"胶带品质及文字",
           "CCXH": "",//"抽查箱号",
-          "BZJYJG": "",//"包装检验结果--检验结果 0--未检测   1-合格 2-不合格",
+          "BZJYJG": 0,//"包装检验结果--检验结果 0--未检测   1-合格 2-不合格",
 
           "QCSIZETABLE": {    //  尺码度量
             "ID": "",//”主键”,
             "QCID": "",//"主表ID",
             "AQL": "",//AQL,
             "BHGQTY": "",//不合格数",
-            "CMJYJG": "",//"检验结果  0--未检测   1-合格  2-未合格",
+            "CMJYJG": 0,//"检验结果  0--未检测   1-合格  2-未合格",
             "SIZETABLEPATH": "",//"尺码表图片路径",
             "IMG": "",//"图片",
             "PTS": "",//"PTS接受",
@@ -797,6 +802,10 @@
       this.pagedata.PO = routeInfo.PO;
       this.pagedata.QTY = routeInfo.TotalQty;
 
+      // 验货员
+      this.pagedata.USERNAME=this.$store.state.user.username;
+      this.pagedata.QCNAME=this.$store.state.user.realname;
+
       this.initPageData();
     },
     computed: {
@@ -838,7 +847,91 @@
         let cc = this.pagedata.QCSIZETABLE.CCQTY;
 
         if (bhg == "" || cc == "") return "";
-        return parseInt(bhg) / cc + "%";
+        return parseInt(bhg) / cc * 100 + "%";
+      },
+      // 尺码度量和格？
+      CMJYJG() {
+        let bhg = this.pagedata.QCSIZETABLE.BHGQTY;
+        let pts = this.pagedata.QCSIZETABLE.ACCEPTSTD;   //最小标准
+
+        if (bhg == "" || pts == "") return 0;
+        if (bhg <= pts) {
+          return 1//"合格"
+        } else {
+          return 2//"不合格"
+        }
+      },
+
+//      总共检验结果
+      ZGJYJG(){
+        let result="合格";
+        this.pagedata.QCFABTRIMLIST.forEach(item=>{
+          if(item.JYJG==2){  //错
+            result="不合格"
+          }
+        });
+
+        this.pagedata.QCFABTRIMLIST2.forEach(item=>{
+          if(item.JYJG==2){  //错
+            result="不合格"
+          }
+        });
+
+        if(this.CMJYJG==2){
+          result="不合格"
+        };
+
+        if(this.KSJYJG==2){
+          result="不合格"
+        }
+
+        if(this.MCCSJYJG=="不合格"){
+          result="不合格"
+        }
+        if(this.ZSCSJYJG=="不合格"){
+          result="不合格"
+        }
+
+        return result;
+      },
+
+      // 可视检验结果
+      KSJYJG() {
+        let total = this.wjTotal + this.yzTotal + this.qwTotal / 2;
+        let ksjs = this.pagedata.KSJS;   //最小标准
+
+        if (total == 0 || ksjs == "") return 0;
+        if (this.wjTotal < 1 && total <= ksjs) {
+          return 1//"合格"
+        } else {
+          return 2//"不合格"
+        }
+      },
+      // 面料和成衣测试结果
+      MCCSJYJG() {
+        if (this.pagedata.FABSTATUS == 2 || this.pagedata.CYSTATUS == 2) {
+          this.pagedata.MCCSJYJG = 2;
+          return "不合格"
+        } else if (this.pagedata.FABSTATUS == 0 && this.pagedata.CYSTATUS == 0) {
+          this.pagedata.MCCSJYJG = 0;
+          return "未检测"
+        } else {
+          this.pagedata.MCCSJYJG = 1;
+          return "合格"
+        }
+      },
+      // 整数测试结果
+      ZSCSJYJG() {
+        if (this.pagedata.STITCH == 2 || this.pagedata.WEIGHT == 2) {
+          this.pagedata.ZSCSJYJG = 2;
+          return "不合格"
+        } else if (this.pagedata.STITCH == 0 && this.pagedata.WEIGHT == 0) {
+          this.pagedata.ZSCSJYJG = 0;
+          return "未检测"
+        } else {
+          this.pagedata.ZSCSJYJG = 1;
+          return "合格"
+        }
       }
     },
     filters: {
@@ -861,6 +954,11 @@
           return "合格"
         }
         return ""
+      },
+      passOrFail(value) {
+        if (value == 0) return "";
+        if (value == 1) return "合格";
+        if (value == 2) return "不合格";
       }
     },
     methods: {
@@ -870,22 +968,27 @@
         let pagedata = JSON.parse(JSON.stringify(this.pagedata));
         pagedata.QCPACKIMGLIST = QCPACKIMGLIST;
         pagedata.QCSIZETABLE.DEFECTIVE = this.defective;
+        pagedata.QCSIZETABLE.CMJYJG = this.CMJYJG;
+        pagedata.KSJYJG = this.KSJYJG;
+        pagedata.ZGJYJG = this.ZGJYJG;
 
         pagedata.QCKSIMGLIST = pagedata.QCKSIMGLIST.map(item => {
           item.CDSM = item.CDSM.join(",");
           return item;
         });
-        //.....
-
         console.log(pagedata)
+        console.log(JSON.stringify(pagedata));
 //        2 diaojiekou
         let res = await Api.AddQcReport(pagedata);
         if (res.data.STATUS) {
           //3 route home
-//          this.$router.push({name: "home"});
+          this.$router.push({name: "home"});
         }
       },
       initPageData() {
+
+        //尺码度量情况 抽查简述
+        this.computedChouChaJianShu(this.pagedata.QTY)
 
         //  QCPACKIMGTitle 初始数据
         if (this.NAME == 1) {
@@ -910,6 +1013,11 @@
             if (resData.PACKQTY == 0) this.pagedata.PACKQTY = "";
             if (resData.QCSIZETABLE.CCQTY == 0) this.pagedata.QCSIZETABLE.CCQTY = "";
             if (resData.QCSIZETABLE.BHGQTY == 0) this.pagedata.QCSIZETABLE.BHGQTY = "";
+
+            this.QCPACKIMGLIST=resData.QCPACKIMGLIST;  // 改变props
+
+            // 签名
+            if(resData.FIELD2!="") this.pagedata.FIELD2= "data:image/png;base64,"+resData.FIELD2;
 
             this.isloading = false;
           });
@@ -941,18 +1049,245 @@
         }
       },
 
+      computedChouChaJianShu(num) {
+        num = parseInt(num);
+        if (num < 280) {
+          this.pagedata.QCSIZETABLE.CCQTY = 32;
+        } else if (280 <= num < 500) {
+          this.pagedata.QCSIZETABLE.CCQTY = 50;
+
+        } else if (501 <= num < 1200) {
+          this.pagedata.QCSIZETABLE.CCQTY = 80;
+
+        } else if (1200 <= num < 3200) {
+          this.pagedata.QCSIZETABLE.CCQTY = 125;
+
+        } else if (3200 <= num < 10000) {
+          this.pagedata.QCSIZETABLE.CCQTY = 200;
+
+        } else if (10000 <= num < 35000) {
+          this.pagedata.QCSIZETABLE.CCQTY = 315;
+
+        } else if (35000 <= num) {
+          this.pagedata.QCSIZETABLE.CCQTY = 500;
+        } else {
+          this.pagedata.QCSIZETABLE.CCQTY = 0;
+        }
+
+        this.pagedata.KSCCSL = this.pagedata.QCSIZETABLE.CCQTY;
+      },
+
       changeSIZEAQL(value) {
-        // 4.0   6.5
-        this.pagedata.QCSIZETABLE.CCQTY = 50;
-        this.pagedata.QCSIZETABLE.PTS = value == 4.0 ? 6 : 8;
-        this.pagedata.QCSIZETABLE.ACCEPTSTD = value == 4.0 ? 5 : 7;
+
+        let CCQTY = this.pagedata.QCSIZETABLE.CCQTY;
+        let AQL = value;
+
+        switch (AQL) {
+          case 1.5:
+            if (CCQTY == 32) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 1;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 2;  //不合格
+            } else if (CCQTY == 50) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 2;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 3;  //不合格
+            } else if (CCQTY == 80) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 3;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 4;  //不合格
+            } else if (CCQTY == 125) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 5;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 6;  //不合格
+            } else if (CCQTY == 200) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 7;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 8;  //不合格
+            } else if (CCQTY == 315) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 10;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 11;  //不合格
+            } else if (CCQTY == 500) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 14;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 15;  //不合格
+            }
+            break;
+          case 2.5:
+            if (CCQTY == 32) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 2;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 3;  //不合格
+            } else if (CCQTY == 50) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 3;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 4;  //不合格
+            } else if (CCQTY == 80) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 5;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 6;  //不合格
+            } else if (CCQTY == 125) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 7;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 8;  //不合格
+            } else if (CCQTY == 200) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 10;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 11;  //不合格
+            } else if (CCQTY == 315) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 14;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 15;  //不合格
+            } else if (CCQTY == 500) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 21;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 22;  //不合格
+            }
+            break;
+          case 4:
+            if (CCQTY == 32) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 3;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 4;  //不合格
+            } else if (CCQTY == 50) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 5;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 6;  //不合格
+            } else if (CCQTY == 80) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 7;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 8;  //不合格
+            } else if (CCQTY == 125) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 10;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 11;  //不合格
+            } else if (CCQTY == 200) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 14;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 15;  //不合格
+            } else if (CCQTY == 315) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 21;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 22;  //不合格
+            } else if (CCQTY == 500) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 31;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 32;  //不合格
+            }
+            break;
+          case 6.5:
+            if (CCQTY == 32) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 5;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 6;  //不合格
+            } else if (CCQTY == 50) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 7;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 8;  //不合格
+            } else if (CCQTY == 80) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 10;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 11;  //不合格
+            } else if (CCQTY == 125) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 14;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 15;  //不合格
+            } else if (CCQTY == 200) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 21;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 22;  //不合格
+            } else if (CCQTY == 315) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 21;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 22;  //不合格
+            } else if (CCQTY == 500) {
+              this.pagedata.QCSIZETABLE.ACCEPTSTD = 31;  //合格
+              this.pagedata.QCSIZETABLE.PTS = 32;  //不合格
+            }
+            break;
+          default:
+            ""
+        }
       },
       changeKSAQL(value) {
         //todo 逻辑缺失
+        let AQL = value;
+        let CCQTY = this.pagedata.QCSIZETABLE.CCQTY;
 
-        this.pagedata.KSCCSL = value;
-        this.pagedata.KSJS = value;
-        this.pagedata.KSJSBJ = value;
+        switch (AQL) {
+          case 1.5:
+            if (CCQTY == 32) {
+              this.pagedata.KSJS = 1;  //合格
+              this.pagedata.KSBJS = 2;  //不合格
+            } else if (CCQTY == 50) {
+              this.pagedata.KSJS = 2;  //合格
+              this.pagedata.KSBJS = 3;  //不合格
+            } else if (CCQTY == 80) {
+              this.pagedata.KSJS = 3;  //合格
+              this.pagedata.KSBJS = 4;  //不合格
+            } else if (CCQTY == 125) {
+              this.pagedata.KSJS = 5;  //合格
+              this.pagedata.KSBJS = 6;  //不合格
+            } else if (CCQTY == 200) {
+              this.pagedata.KSJS = 7;  //合格
+              this.pagedata.KSBJS = 8;  //不合格
+            } else if (CCQTY == 315) {
+              this.pagedata.KSJS = 10;  //合格
+              this.pagedata.KSBJS = 11;  //不合格
+            } else if (CCQTY == 500) {
+              this.pagedata.KSJS = 14;  //合格
+              this.pagedata.KSBJS = 15;  //不合格
+            }
+            break;
+          case 2.5:
+            if (CCQTY == 32) {
+              this.pagedata.KSJS = 2;  //合格
+              this.pagedata.KSBJS = 3;  //不合格
+            } else if (CCQTY == 50) {
+              this.pagedata.KSJS = 3;  //合格
+              this.pagedata.KSBJS = 4;  //不合格
+            } else if (CCQTY == 80) {
+              this.pagedata.KSJS = 5;  //合格
+              this.pagedata.KSBJS = 6;  //不合格
+            } else if (CCQTY == 125) {
+              this.pagedata.KSJS = 7;  //合格
+              this.pagedata.KSBJS = 8;  //不合格
+            } else if (CCQTY == 200) {
+              this.pagedata.KSJS = 10;  //合格
+              this.pagedata.KSBJS = 11;  //不合格
+            } else if (CCQTY == 315) {
+              this.pagedata.KSJS = 14;  //合格
+              this.pagedata.KSBJS = 15;  //不合格
+            } else if (CCQTY == 500) {
+              this.pagedata.KSJS = 21;  //合格
+              this.pagedata.KSBJS = 22;  //不合格
+            }
+            break;
+          case 4:
+            if (CCQTY == 32) {
+              this.pagedata.KSJS = 3;  //合格
+              this.pagedata.KSBJS = 4;  //不合格
+            } else if (CCQTY == 50) {
+              this.pagedata.KSJS = 5;  //合格
+              this.pagedata.KSBJS = 6;  //不合格
+            } else if (CCQTY == 80) {
+              this.pagedata.KSJS = 7;  //合格
+              this.pagedata.KSBJS = 8;  //不合格
+            } else if (CCQTY == 125) {
+              this.pagedata.KSJS = 10;  //合格
+              this.pagedata.KSBJS = 11;  //不合格
+            } else if (CCQTY == 200) {
+              this.pagedata.KSJS = 14;  //合格
+              this.pagedata.KSBJS = 15;  //不合格
+            } else if (CCQTY == 315) {
+              this.pagedata.KSJS = 21;  //合格
+              this.pagedata.KSBJS = 22;  //不合格
+            } else if (CCQTY == 500) {
+              this.pagedata.KSJS = 31;  //合格
+              this.pagedata.KSBJS = 32;  //不合格
+            }
+            break;
+          case 6.5:
+            if (CCQTY == 32) {
+              this.pagedata.KSJS = 5;  //合格
+              this.pagedata.KSBJS = 6;  //不合格
+            } else if (CCQTY == 50) {
+              this.pagedata.KSJS = 7;  //合格
+              this.pagedata.KSBJS = 8;  //不合格
+            } else if (CCQTY == 80) {
+              this.pagedata.KSJS = 10;  //合格
+              this.pagedata.KSBJS = 11;  //不合格
+            } else if (CCQTY == 125) {
+              this.pagedata.KSJS = 14;  //合格
+              this.pagedata.KSBJS = 15;  //不合格
+            } else if (CCQTY == 200) {
+              this.pagedata.KSJS = 21;  //合格
+              this.pagedata.KSBJS = 22;  //不合格
+            } else if (CCQTY == 315) {
+              this.pagedata.KSJS = 21;  //合格
+              this.pagedata.KSBJS = 22;  //不合格
+            } else if (CCQTY == 500) {
+              this.pagedata.KSJS = 31;  //合格
+              this.pagedata.KSBJS = 32;  //不合格
+            }
+            break;
+          default:
+            ""
+        }
       },
 
       addQCKSIMG() {
@@ -1014,16 +1349,6 @@
 </script>
 
 <style lang="less">
-  @import "../assets/style/var";
-
-  /*.dialog-class {*/
-  /*.el-dialog__title {*/
-  /*font-size: 1.2rem;*/
-  /*}*/
-  /*.mint-cell-title {*/
-  /*margin-right: 2rem;*/
-  /*}*/
-  /*}*/
 
   .td-upload {
     height: 3rem;

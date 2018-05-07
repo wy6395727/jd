@@ -86,9 +86,9 @@
         type: Array,
         default: []
       },
-      isDisable:{
-        type:Boolean,
-        default:false
+      isDisable: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -98,16 +98,18 @@
     },
     created() {
       let num = this.titles.length;
-//    {“PSSJ”:”时间”,"PSDD":"上海","TPSM":"图片说明",“ImgPath”:”图片路径”,”Index”:”第几张”}
 
-//    [{"ID":包装图片表 ID序号 新增ID=0，修改ID为自己值,
-//      "QCID":"主表ID",
-//      "IMGTYPE":1,
-//      "NAME":"Test",
-//“ImgItem”:”[{“PSSJ”:”时间”,"PSDD":"上海","TPSM":"图片说明",“ImgPath”:”图片路径”,”Index”:”第几张”}]”
       if (this.QCITEM.length > 0) {
-        this.imageUrls = JSON.parse(JSON.stringify(this.QCITEM));
-      } else {
+        this.imageUrls = this.QCITEM.map(item => {
+          return {
+            ID: item.ID,
+            QCID: item.QCID,
+            IMGTYPE: item.IMGTYPE,
+            NAME: item.NAME,
+            IMGITEM: JSON.parse(item.IMGITEM)
+          }
+        });
+      }else{
         for (let i = 0; i < num; i++) {
           let item = {};
           item.ID = 0;
@@ -128,14 +130,30 @@
           this.imageUrls.push(item);
         }
       }
+
       console.log(this.imageUrls);
+    },
+    watch: {
+      QCITEM(value, oldValue) {
+        if (this.QCITEM.length > 0) {
+          this.imageUrls = this.QCITEM.map(item => {
+            return {
+              ID: item.ID,
+              QCID: item.QCID,
+              IMGTYPE: item.IMGTYPE,
+              NAME: item.NAME,
+              IMGITEM: JSON.parse(item.IMGITEM)
+            }
+          });
+        }
+      },
     },
     computed: {},
     methods: {
       handlesuccess(FilePath, {row, col}) {
         // 自定义的设置filepath 事件
         this.imageUrls[row].IMGITEM[col].ImgPath = FilePath;
-      }
+      },
     }
   };
 </script>

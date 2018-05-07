@@ -1,19 +1,12 @@
 import axios from "axios"
 
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
-// let axiosPostConfig = {
-//   headers: {
-//     'Content-Type': 'application/x-www-form-urlencoded'
-//   },
-//   transformRequest: [function (data) {
-//     // Do whatever you want to transform the data
-//     let ret = ''
-//     for (let it in data) {
-//       ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-//     }
-//     return ret
-//   }],
-// }
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+if(process.env.NODE_ENV == "development"){
+  console.log('development')
+}else{
+  axios.defaults.baseURL = 'http://qctest.jade-fashion.com';
+  console.log('build')
+}
 
 export default {
   //weijanyanguo  api/qcservice/GetSearchMakeContractList

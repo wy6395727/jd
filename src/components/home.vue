@@ -280,7 +280,6 @@
     },
     created() {
       self = this;
-
       Indicator.open({
         text: "加载中...",
         spinnerType: "fading-circle"
@@ -290,19 +289,25 @@
       });
     },
     computed: {
-      STARTDATE() {
-        if (this.postForm.STARTDATE != "") {
-          return new Date(this.postForm.STARTDATE);
-        } else {
-          return new Date();
-        }
+      STARTDATE: {
+        get(){
+          if (this.postForm.STARTDATE != "") {
+            return new Date(this.postForm.STARTDATE);
+          } else {
+            return new Date();
+          }
+        },
+        set(v){},
       },
-      ENDDATE() {
-        if (this.postForm.ENDDATE != "") {
-          return new Date(this.postForm.ENDDATE);
-        } else {
-          return new Date();
-        }
+      ENDDATE: {
+        get(){
+          if (this.postForm.ENDDATE != "") {
+            return new Date(this.postForm.ENDDATE);
+          } else {
+            return new Date();
+          }
+        },
+        set(v){},
       },
       ...mapState({
         username: state => state.user.username,

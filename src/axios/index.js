@@ -1,5 +1,6 @@
 import axios from "axios"
 import {Toast} from "mint-ui"
+
 axios.interceptors.request.use(config=>{
   return config;
 },err=>{

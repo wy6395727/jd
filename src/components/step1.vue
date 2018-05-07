@@ -1,7 +1,7 @@
 <template>
   <div class="step-page">
     <mt-header class="mt-header-fixed" title="前期订单详情">
-      <router-link to="/" slot="left">
+      <router-link to="/home" slot="left">
         <mt-button icon="back">返回</mt-button>
       </router-link>
     </mt-header>
@@ -221,9 +221,11 @@
       this.pagedata.PO = routeInfo.PO;
       this.pagedata.QTY = routeInfo.TotalQty;
 
-      this.initPageData();
+      // 验货员
+      this.pagedata.USERNAME=this.$store.state.user.username;
+      this.pagedata.REALNAME=this.$store.state.user.realname;
 
-//      this.txt=this.$route.query.txt;
+      this.initPageData();
     },
     computed: {
 //      datetimeC:{
@@ -244,12 +246,17 @@
 //修改页 逻辑
           this.isDisable=true; //禁用所有输入
 
-          Api.GetQcReportQQInfo({QCID: this.pagedata.QCID}).then(res => {
+          Api.GetQcReportQQInfo({QCID: this.pagedata.QCID}).then(res=>{
             let resData = res.data.DATAOBJ;
             this.pagedata = resData;
 
+            this.QCITEM=resData.QCITEM;  // 改变props
+
+            if(resData.QNAME!="") this.pagedata.QNAME= "data:image/png;base64,"+resData.QNAME;
+
             this.isloading = false;
           });
+
         } else {
           //添加逻辑
         }
@@ -257,7 +264,6 @@
       async submitData() {
         //todo push data
         this.pagedata.QCITEM = this.$refs.tablepicture.imageUrls;
-        debugger
         let res = await Api.AddQcReportQQ(this.pagedata);
         if (res.data.STATUS) {
           this.$router.push({name: "home"})
@@ -290,7 +296,6 @@
 </script>
 
 <style lang="less">
-  @import "../assets/style/var";
 
   //reset
   /*.mint-popup-bottom {*/
