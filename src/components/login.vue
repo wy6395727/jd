@@ -13,7 +13,7 @@
             <el-input type="password" placeholder="请输入密码" v-model="loginForm.password"></el-input>
           </el-form-item>
           <el-form-item>
-            <mt-button type="primary" @click="loginMethod('loginForm')" class="submit_btn">登陆</mt-button>
+            <el-button type="primary" @click="loginMethod('loginForm')" class="submit_btn">登陆</el-button>
           </el-form-item>
         </el-form>
       </section>

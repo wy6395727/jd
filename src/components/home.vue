@@ -1,6 +1,9 @@
 <template>
   <div>
-    <header class="mint-header" style="padding: 0 1.5rem;">
+    <header class="mint-header" style="padding: 0 1.5rem;position: fixed;
+    width: 100%;
+    z-index: 1000;
+    top: 0;">
       <div class="mint-header-button is-left">
         <button class="mint-button" @click="clickuser">
           <img src="../assets/imgs/user.png" alt=" " style="width: 1.5rem;">
@@ -228,7 +231,7 @@
 
   var self = "";
   export default {
-    name: "page-index",
+    name: "home",
     components: {},
     data() {
       return {
@@ -592,6 +595,7 @@
   }
 
   .loadmore-wrapper {
+    padding-top: 70px;
     height: calc(~"100vh - " @header-height);
     overflow: scroll;
   }
