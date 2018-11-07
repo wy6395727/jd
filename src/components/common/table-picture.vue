@@ -73,6 +73,9 @@
 
 <script>
   import TdUpload from "./td-upload.vue";
+  import {Toast} from 'mint-ui';
+  import Axios from "axios";
+  import $ from 'jquery';
 
   export default {
     components: {TdUpload},
@@ -94,11 +97,14 @@
     data() {
       return {
         imageUrls: [],  //table各个数据
+        PSDD: ""// 保存地点
       };
     },
     created() {
       let num = this.titles.length;
 
+      // this.showPosition();
+      this.getCurrenLocation();
       if (this.QCITEM.length > 0) {
         this.imageUrls = this.QCITEM.map(item => {
           return {
@@ -109,7 +115,7 @@
             IMGITEM: JSON.parse(item.IMGITEM)
           }
         });
-      }else{
+      } else {
         for (let i = 0; i < num; i++) {
           let item = {};
           item.ID = 0;
@@ -131,7 +137,6 @@
         }
       }
 
-      console.log(this.imageUrls);
     },
     watch: {
       QCITEM(value, oldValue) {
@@ -151,9 +156,64 @@
     computed: {},
     methods: {
       handlesuccess(FilePath, {row, col}) {
+
+        this.imageUrls[row].IMGITEM[col].PSDD = this.PSDD;
+        this.imageUrls[row].IMGITEM[col].PSSJ = this.formatDateTime(new Date());
         // 自定义的设置filepath 事件
         this.imageUrls[row].IMGITEM[col].ImgPath = FilePath;
       },
+
+      showPosition(position) {
+        let latlon = position.coords.latitude + ',' + position.coords.longitude;
+        let self = this;
+        let url = "http://api.map.baidu.com/geocoder/v2/?ak=C93b5178d7a8ebdb830b9b557abce78b&location=" + latlon + "&output=json&pois=0";
+        $.ajax({
+          type: "GET",
+          dataType: "jsonp",
+          url: url,
+          success: function (json) {
+            if (json.status == 0) {
+              self.PSDD = json.result.addressComponent.street + json.result.addressComponent.street_number;
+            }
+          },
+        });
+      },
+      getCurrenLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(this.showPosition, (error) => {
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                Toast("定位失败,用户拒绝请求地理定位");
+                break;
+              case error.POSITION_UNAVAILABLE:
+                Toast("定位失败,位置信息是不可用");
+                break;
+              case error.TIMEOUT:
+                Toast("定位失败,请求获取用户位置超时");
+                break;
+              case error.UNKNOWN_ERROR:
+                Toast("定位失败,定位系统失效");
+                break;
+            }
+          });
+        } else {
+          Toast("浏览器不支持地理定位。");
+        }
+      },
+      formatDateTime(date) {
+        let y = date.getFullYear();
+        let m = date.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        let d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        let h = date.getHours();
+        h = h < 10 ? ('0' + h) : h;
+        let minute = date.getMinutes();
+        minute = minute < 10 ? ('0' + minute) : minute;
+        let second = date.getSeconds();
+        second = second < 10 ? ('0' + second) : second;
+        return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
+      }
     }
   };
 </script>

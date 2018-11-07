@@ -109,7 +109,9 @@
     </table>
 
     <div class="submit-btn">
-      <mt-button type="primary" :disabled="isDisable" @click="submitData">{{STATUS ? "已提交" : "提交"}}</mt-button>
+      <mt-button type="primary" v-if="!IsFinish" @click="saveData">临时保存</mt-button>
+      <mt-button type="primary" :disabled="isDisable" @click.once="submitData">{{isDisable? "已提交" : "提交"}}
+      </mt-button>
     </div>
 
     <mt-datetime-picker
@@ -171,7 +173,7 @@
 //      "REALNAME":"验货员真实名",
 
         txt: "前期",
-        isDisable:false,
+        isDisable: false,
         popupVisible: false,
         pagedata: {
           FACTNAME: "",
@@ -200,6 +202,7 @@
         },
 
         STATUS: false,  //是修改的页面，需要掉接口拿数据
+        IsFinish: false, //是否已完成页面
         QCITEM: [],
         datetime: '',// timepicker
         pickKey: "SXRQ"
@@ -213,6 +216,7 @@
       this.pagedata.CONTRACTNO = routeData.CONTRACTNO;
       this.pagedata.QCID = routeData.QCID;
       this.STATUS = Boolean(routeData.STATUS);
+      this.IsFinish = Boolean(routeData.IsFinish);
 
       this.pagedata.FACTNAME = routeInfo.FactName;
       this.pagedata.CUSTNAME = routeInfo.CustName;
@@ -221,9 +225,10 @@
       this.pagedata.PO = routeInfo.PO;
       this.pagedata.QTY = routeInfo.TotalQty;
 
+
       // 验货员
-      this.pagedata.USERNAME=this.$store.state.user.username;
-      this.pagedata.REALNAME=this.$store.state.user.realname;
+      this.pagedata.USERNAME = this.$store.state.user.username;
+      this.pagedata.REALNAME = this.$store.state.user.realname;
 
       this.initPageData();
     },
@@ -244,15 +249,17 @@
       initPageData() {
         if (this.STATUS) {
 //修改页 逻辑
-          this.isDisable=true; //禁用所有输入
+          if (this.IsFinish) {
+            this.isDisable = true; //禁用所有输入
+          }
 
-          Api.GetQcReportQQInfo({QCID: this.pagedata.QCID}).then(res=>{
+          Api.GetQcReportQQInfo({QCID: this.pagedata.QCID}).then(res => {
             let resData = res.data.DATAOBJ;
             this.pagedata = resData;
 
-            this.QCITEM=resData.QCITEM;  // 改变props
+            this.QCITEM = resData.QCITEM;  // 改变props
 
-            if(resData.QNAME!="") this.pagedata.QNAME= "data:image/png;base64,"+resData.QNAME;
+            if (resData.QNAME != "") this.pagedata.QNAME = "data:image/png;base64," + resData.QNAME;
 
             this.isloading = false;
           });
@@ -264,8 +271,34 @@
       async submitData() {
         //todo push data
         this.pagedata.QCITEM = this.$refs.tablepicture.imageUrls;
-        let res = await Api.AddQcReportQQ(this.pagedata);
-        if (res.data.STATUS) {
+        this.pagedata.IsFinish = 1;
+
+        if(this.pagedata.USERNAME==""){
+          this.$router.push({name:"login"})
+        }
+        let res = {};
+        if (this.STATUS) {
+          res = await Api.UpdateQcReportQQ(this.pagedata)
+        } else {
+          res = await Api.AddQcReportQQ(this.pagedata);
+        }
+
+        if (res.data.STATUS === "1") {
+          this.$router.push({name: "home"})
+        }
+      },
+      async saveData() {
+        //临时保存
+        this.pagedata.QCITEM = this.$refs.tablepicture.imageUrls;
+        this.pagedata.IsFinish = 0;
+        let res = {};
+        if (this.STATUS) {
+          res = await Api.UpdateQcReportQQ(this.pagedata)
+        } else {
+          res = await Api.AddQcReportQQ(this.pagedata);
+        }
+
+        if (res.data.STATUS === "1") {
           this.$router.push({name: "home"})
         }
 
@@ -284,7 +317,7 @@
         }
       },
       openDraw() {
-        if(this.isDisable)return;
+        if (this.isDisable) return;
         this.popupVisible = true;
       },
       drawTable(url) {

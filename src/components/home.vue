@@ -2,6 +2,7 @@
   <div>
     <header class="mint-header" style="padding: 0 1.5rem;position: fixed;
     width: 100%;
+    /*height: 140px;*/
     z-index: 1000;
     top: 0;">
       <div class="mint-header-button is-left">
@@ -167,14 +168,16 @@
       </div>
       <div class="jump-wrap">
         <p v-for="countItem in countList" :key="countItem.key">
-          <router-link
-            :to="{name:countItem.NAME==0?'step1':'step2',query:{data:toJson(countItem),info:toJson(currentRow)}}">
+          <a @click="jumpStep(countItem)">
             <div class="jump-div" :style="{color:countItem.STATUS==1 ? '#67C23A':'#F56C6C'}">
               <span>{{countItem.NAME | toName}}订单第{{countItem.CNT}}次</span>
-              <span class="jump-status">{{countItem.STATUS == 0 ? '未' : '已'}}完成&nbsp;&nbsp;<i
+
+              <span class="jump-status" v-if="countItem.STATUS==0">新增&nbsp;&nbsp;<i
+                class="el-icon-arrow-right"></i></span>
+              <span class="jump-status" v-else>{{countItem.IsFinish == 0 ? '修改' : '已完成'}}&nbsp;&nbsp;<i
                 class="el-icon-arrow-right"></i></span>
             </div>
-          </router-link>
+          </a>
         </p>
       </div>
     </el-dialog>
@@ -227,7 +230,7 @@
   import Vue from "vue";
   import Api from "../axios/api";
   import {Indicator} from "mint-ui";
-  import { mapState } from 'vuex'
+  import { mapState } from 'vuex';
 
   var self = "";
   export default {
@@ -349,10 +352,15 @@
             this.tableData = resData.data.DATAOBJ.ITEM;
           }
           this.total = resData.data.DATAOBJ.TOTAL;
-          console.log(this.tableData);
-          console.log(this.total);
         }
         return;
+      },
+      jumpStep(countItem){
+        if(countItem.STATUS==1 && countItem.IsFinish==0 && this.$store.state.user.username!=countItem.UserName){
+          this.$message.warning("您无权限修改此条记录！")
+          return
+        }
+        this.$router.push({name:countItem.NAME==0?'step1':'step2',query:{data:this.toJson(countItem),info:this.toJson(this.currentRow)}})
       },
       toJson(obj) {
         return JSON.stringify(obj);

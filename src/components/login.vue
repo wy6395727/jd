@@ -7,7 +7,7 @@
         </div>
         <el-form :model="loginForm" :rules="rules" ref="loginForm">
           <el-form-item prop="username">
-            <el-input v-model="loginForm.username" placeholder="请输入手机号"><span></span></el-input>
+            <el-input v-model="loginForm.username" placeholder="输入手机号"><span></span></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input type="password" placeholder="请输入密码" v-model="loginForm.password"></el-input>

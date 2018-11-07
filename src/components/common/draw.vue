@@ -98,7 +98,6 @@ export default {
         var data = draw.save();
         // this.url = data;
         this.$emit('drawTable', data);
-        console.log(data);
       }
     }
 };

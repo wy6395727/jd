@@ -7,8 +7,7 @@
 
     </mt-header>
 
-    <div v-if="isloading" style="width:100%;margin-top: 4rem;text-align: center;"
-    >
+    <div v-if="isloading" style="width:100%;margin-top: 4rem;text-align: center;">
       <mt-spinner
         :size="60"
         type="triple-bounce"></mt-spinner>
@@ -23,7 +22,7 @@
         <tr>
           <td>检验结果</td>
           <td class="c-td">
-            <span class="c-td-span">{{ZGJYJG}}</span>
+            <span class="c-td-span">{{pagedata.ZGJYJG==0?"合格":"不合格"}}</span>
           </td>
           <td>客户</td>
           <td class="c-td">
@@ -227,7 +226,7 @@
         </tr>
       </table>
 
-      <el-row >
+      <el-row>
         <el-col :span="12" style="padding-right: 10px;">
           <div class="table-titile">
             <mt-badge size="small" color="#36b101">Ⅳ</mt-badge>
@@ -550,7 +549,9 @@
       </table>
 
       <div class="submit-btn">
-        <mt-button type="primary" @click="submitPage" :disabled="STATUS">{{STATUS ? "已提交" : "提交"}}</mt-button>
+        <mt-button type="primary" v-if="!IsFinish" @click="submitPage(0)">临时保存</mt-button>
+        <mt-button type="primary" @click.once="submitPage(1)" :disabled="isDisable">{{isDisable ? "已提交" : "提交"}}
+        </mt-button>
       </div>
     </div>
 
@@ -688,6 +689,7 @@
         isloading: false,  // 加载页面数据中
         popupVisible: false,
         STATUS: 0,  //1 已完成 0 为完成
+        IsFinish: false,
         NAME: '',  // 1中期  2尾期
         pagedata: {
           "QCID": "",//"主键QC",
@@ -776,7 +778,7 @@
               "QW": "",//”轻微”,
               "YZ": "",//”严重”,
               "CDSM": [],//”疵点说明字段”,
-              "ISXF": ""//”是否能修复”  1 是   0 否
+              "ISXF": -1//”是否能修复”  1 是   0 否
             }
           ],//-----“可视检查图片信息”
           "QCPACKIMGLIST": [],//----包装信息 -----
@@ -793,6 +795,7 @@
       this.pagedata.QCID = routeData.QCID;
       this.pagedata.FIELD1 = routeData.NAME;
       this.STATUS = Boolean(routeData.STATUS);
+      this.IsFinish = Boolean(routeData.IsFinish);
       this.NAME = routeData.NAME;
 
       this.pagedata.FACTNAME = routeInfo.FactName;
@@ -803,8 +806,8 @@
       this.pagedata.QTY = routeInfo.TotalQty;
 
       // 验货员
-      this.pagedata.USERNAME=this.$store.state.user.username;
-      this.pagedata.QCNAME=this.$store.state.user.realname;
+      this.pagedata.USERNAME = this.$store.state.user.username;
+      this.pagedata.QCNAME = this.$store.state.user.realname;
 
       this.initPageData();
     },
@@ -863,34 +866,37 @@
       },
 
 //      总共检验结果
-      ZGJYJG(){
-        let result="合格";
-        this.pagedata.QCFABTRIMLIST.forEach(item=>{
-          if(item.JYJG==2){  //错
-            result="不合格"
+      ZGJYJG() {
+        let result = 0;
+        this.pagedata.QCFABTRIMLIST.forEach(item => {
+          if (item.JYJG == 2) {  //错
+            result = 1
           }
         });
 
-        this.pagedata.QCFABTRIMLIST2.forEach(item=>{
-          if(item.JYJG==2){  //错
-            result="不合格"
+        this.pagedata.QCFABTRIMLIST2.forEach(item => {
+          if (item.JYJG == 2) {  //错
+            result = 1
           }
         });
 
-        if(this.CMJYJG==2){
-          result="不合格"
-        };
+        if (this.CMJYJG == 2) {
+          result = 1
+        }
+        ;
 
-        if(this.KSJYJG==2){
-          result="不合格"
+        if (this.KSJYJG == 2) {
+          result = 1
         }
 
-        if(this.MCCSJYJG=="不合格"){
-          result="不合格"
+        if (this.MCCSJYJG == "不合格") {
+          result = 1
         }
-        if(this.ZSCSJYJG=="不合格"){
-          result="不合格"
+        if (this.ZSCSJYJG == "不合格") {
+          result = 1
         }
+
+        this.pagedata.ZGJYJG=result;
 
         return result;
       },
@@ -962,8 +968,10 @@
       }
     },
     methods: {
-      async submitPage() {
+      async submitPage(IsFinish) {
         //1 pagedata 检查zhunbei
+        this.pagedata.IsFinish = IsFinish
+
         let QCPACKIMGLIST = this.$refs['tablepicture'].imageUrls;
         let pagedata = JSON.parse(JSON.stringify(this.pagedata));
         pagedata.QCPACKIMGLIST = QCPACKIMGLIST;
@@ -976,10 +984,22 @@
           item.CDSM = item.CDSM.join(",");
           return item;
         });
-        console.log(pagedata)
-        console.log(JSON.stringify(pagedata));
 //        2 diaojiekou
-        let res = await Api.AddQcReport(pagedata);
+
+        console.log(pagedata)
+        let res = {};
+
+        if (pagedata.USERNAME == "") {
+          this.$router.push({name: "login"})
+        }
+
+        if (this.STATUS) {
+          res = await Api.UpdateQcReport(pagedata);
+        } else {
+          res = await Api.AddQcReport(pagedata);
+        }
+
+
         if (res.data.STATUS) {
           //3 route home
           this.$router.push({name: "home"});
@@ -1001,7 +1021,11 @@
 
         if (this.STATUS) {
           //已完成 页逻辑  todo  修改
-          this.isDisable = true; //禁用所有输入
+
+
+          if (this.IsFinish) {
+            this.isDisable = true; //禁用所有输入
+          }
 
           this.isloading = true;  //
           Api.GetQcReportInfo({QCID: this.pagedata.QCID}).then(res => {
@@ -1014,10 +1038,24 @@
             if (resData.QCSIZETABLE.CCQTY == 0) this.pagedata.QCSIZETABLE.CCQTY = "";
             if (resData.QCSIZETABLE.BHGQTY == 0) this.pagedata.QCSIZETABLE.BHGQTY = "";
 
-            this.QCPACKIMGLIST=resData.QCPACKIMGLIST;  // 改变props
+            this.QCPACKIMGLIST = resData.QCPACKIMGLIST;  // 改变props
+
+            this.pagedata.QCKSIMGLIST.forEach(item => {
+              item.IMGITEM = JSON.parse(item.IMGITEM)
+              item.XFHIMGITEM = JSON.parse(item.XFHIMGITEM)
+
+              if (item.CDSM !== "") {
+                item.CDSM = item.CDSM.split(",");
+              } else {
+                item.CDSM = []
+              }
+            });
 
             // 签名
-            if(resData.FIELD2!="") this.pagedata.FIELD2= "data:image/png;base64,"+resData.FIELD2;
+            if (resData.FIELD2 != "") this.pagedata.FIELD2 = "data:image/png;base64," + resData.FIELD2;
+
+
+            this.pagedata.QCNAME = this.$store.state.user.realname;
 
             this.isloading = false;
           });
@@ -1025,7 +1063,7 @@
         } else {
           //未完成 页逻辑
           //1 创建数据对象 面、辅料图片信息数组
-          ["颜色 color", "缸差 shading band", "手感 handfeel", "组织 construction", "毛感 peach feel", "绣花 embroidery"].forEach(txt => {
+          ["颜色 color", "缸差 shading band", "手感 handfeel", "组织 construction", "毛感 peach feel", "绣花 embroidery", "水洗"].forEach(txt => {
             this.pagedata.QCFABTRIMLIST.push({
               "ID": 0,
               "QCID": "",//"主表ID",
@@ -1322,7 +1360,6 @@
       },
       handlesuccessKS(FilePath, {row, col}) {
         // 可视检测 响应路劲
-        console.log(FilePath, row, col)
         this.pagedata.QCKSIMGLIST[row][col].ImgPath = FilePath;
       },
       // --end
@@ -1333,7 +1370,6 @@
 //      },
 
       handleChange(value) {
-        console.log(value);
       },
 
       openDraw() {

@@ -1,9 +1,9 @@
 import Api from "../../axios/api"
 
 const state={
-  realname:sessionStorage.getItem("realname"),
-  username:sessionStorage.getItem("username"),
-  ID:sessionStorage.getItem("ID"),
+  realname:localStorage.getItem("realname"),
+  username:localStorage.getItem("username"),
+  ID:localStorage.getItem("ID"),
 }
 
 const mutations={
@@ -12,17 +12,17 @@ const mutations={
     state.username=data.username;
     state.realname=data.realname;
     state.ID=data.ID;
-    sessionStorage.setItem("username",data.username);
-    sessionStorage.setItem("realname",data.realname);
-    sessionStorage.setItem("ID",data.ID);
+    localStorage.setItem("username",data.username);
+    localStorage.setItem("realname",data.realname);
+    localStorage.setItem("ID",data.ID);
   },
   ["LOGIN_OUT"]:(state)=>{
     state.realname=null;
-    sessionStorage.removeItem("realname");
+    localStorage.removeItem("realname");
     state.username=null;
-    sessionStorage.removeItem("username");
+    localStorage.removeItem("username");
     state.ID=null;
-    sessionStorage.removeItem("ID");
+    localStorage.removeItem("ID");
   },
 }
 

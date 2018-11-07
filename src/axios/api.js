@@ -2,10 +2,8 @@ import axios from "axios"
 
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 if(process.env.NODE_ENV == "development"){
-  console.log('development')
 }else{
   axios.defaults.baseURL = 'http://qctest.jade-fashion.com';
-  console.log('build')
 }
 
 export default {
@@ -38,7 +36,16 @@ export default {
   GetQcReportInfo(data){
     return axios.post('/api/qcservice/GetQcReportInfo', data);
   },
-
+  
+  //修改中期、尾期報告
+  UpdateQcReport(data){
+    return axios.post('/api/qcservice/UpdateQcReport', data);
+  },
+  //修改前期報告
+  UpdateQcReportQQ(data){
+    return axios.post('/api/qcservice/UpdateQcReportQQ', data);
+  },
+  
   //上传文件
   UpLoadImg(data) {
     return axios.post('/api/qcservice/UpLoadImg', data);

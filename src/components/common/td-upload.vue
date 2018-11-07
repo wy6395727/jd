@@ -80,7 +80,6 @@ export default {
       reader.readAsDataURL(item.file);
       reader.onloadend = function() {
         // formData.append("ImgBase64", reader.result);
-        console.log(reader.result)
         Api.UpLoadImg({ImgBase64:reader.result})
           .then(res => {
 //            let FilePath = res.data.DATAOBJ.FilePath;
@@ -105,7 +104,6 @@ export default {
     },
     handlechange(file) {
       let objURL = URL.createObjectURL(file.raw);
-      console.log(objURL)
       this.imageUrl = objURL;
     },
     handlesuccess(response) {
