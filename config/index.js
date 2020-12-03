@@ -12,7 +12,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api':{
-        target:"http://qctest.jade-fashion.com",
+        // target:"http://qctest.jade-fashion.com",
+        target:"http://jadeqc.jade-fashion.com:8080",
         changeOrigin: true,
         pathRewrite: {
           '^/api': 'api'

@@ -2,7 +2,10 @@ import Vue from 'vue'
 
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
-import { Table ,TableColumn ,Icon,Popover,Row,Col,Input,DatePicker,Button,Dialog,Upload,Radio,RadioGroup,Select,Option,Cascader,Form,FormItem} from 'element-ui';
+import { Table ,TableColumn ,Icon,Popover,Row,Col,Input,DatePicker,Button,Dialog,Upload,Radio,RadioGroup,Select,Option,Cascader,Form,FormItem,MessageBox,
+  Message,
+  Notification
+} from 'element-ui';
 
 import App from './App'
 import router from './router'
@@ -29,6 +32,13 @@ Vue.use(Option)
 Vue.use(Cascader)
 Vue.use(Form)
 Vue.use(FormItem)
+Vue.use(MessageBox)
+Vue.use(Notification)
+Vue.use(Message)
+Vue.prototype.$prompt = MessageBox.prompt;
+Vue.prototype.$notify = Notification;
+Vue.prototype.$message = Message;
+
 
 // 引入mockjs
 // require('./mock')

@@ -357,9 +357,33 @@
       },
       jumpStep(countItem){
         if(countItem.STATUS==1 && countItem.IsFinish==0 && this.$store.state.user.username!=countItem.UserName){
-          this.$message.warning("您无权限修改此条记录！")
+          this.$notify({
+            title: '无权限',
+            message: '您无权限修改此条记录',
+            type: 'error'
+          });
           return
         }
+
+        if(Number(countItem.NAME)==2 && countItem.IsFinish!=1 && this.currentRow.TotalQty>=3000 ){
+          // 中期已完成
+          let flag = this.countList.some(item=>{
+            return Number(item.NAME) == 1 && item.IsFinish==1
+          })
+          console.log('flag:',flag)
+          if(!flag){
+            this.$notify({
+              title: '中期订单未完成',
+              message: '加工数超过3000条,请先完成中期订单！',
+              type: 'warning',
+              duration: 6000,
+            });
+            return;
+          }
+        }
+
+        debugger
+
         this.$router.push({name:countItem.NAME==0?'step1':'step2',query:{data:this.toJson(countItem),info:this.toJson(this.currentRow)}})
       },
       toJson(obj) {
