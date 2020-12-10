@@ -64,7 +64,8 @@ export default {
         if(process.env.NODE_ENV == "development"){
           return `/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
         }else{
-          return `http://qctest.jade-fashion.com/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
+          // return `http://qctest.jade-fashion.com/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
+          return `http://qctest.jade-fashion.com:6060/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
         }
       }
     }
