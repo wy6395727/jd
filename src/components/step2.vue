@@ -557,14 +557,23 @@
 
     <div class="dialog-class">
       <el-dialog
-        :width="isPhone?'90%':'40%'"
+        fullscreen
         :visible.sync="popupVisible"
         :center="true"
         :close-on-click-modal="false"
         :lock-scroll="true"
       >
         <header slot="title" style="font-size: 2rem;">请在指定区域内签名</header>
-        <draw @drawTable="drawTable"></draw>
+        <!--<draw @drawTable="drawTable"></draw>-->
+        <div class="canvas-wrap">
+          <sign-canvas class="sign-canvas" ref="SignCanvas" :options="{canvasWidth:canvasWidth,canvasHeight:500,isSign:true}"/>
+        </div>
+
+        <div class="canvas-btns">
+          <el-button type="primary" @click="drawTable">保存</el-button>
+          <el-button plain type="danger" @click="clearTable">清空</el-button>
+          <el-button plain @click="popupVisible=false">返回</el-button>
+        </div>
       </el-dialog>
 
     </div>
@@ -579,15 +588,19 @@
   import TdUpload from "./common/td-upload.vue";
 
   import Api from "@/axios/api";
+  import SignCanvas from 'sign-canvas';
 
   export default {
     name: 'step2',
     components: {
+      SignCanvas,
       TdUpload,
       Draw, TablePicture, CompanyTitle
     },
     data() {
       return {
+        canvasWidth:500,
+
         selectedOptions: [],
         options: [
           {
@@ -808,6 +821,9 @@
       // 验货员
       this.pagedata.USERNAME = this.$store.state.user.username;
       this.pagedata.QCNAME = this.$store.state.user.realname;
+
+      // canvas width
+      this.canvasWidth = document.body.offsetWidth - 200;
 
       this.initPageData();
     },
@@ -1091,19 +1107,19 @@
         num = parseInt(num);
         if (num < 280) {
           this.pagedata.QCSIZETABLE.CCQTY = 32;
-        } else if (280 <= num < 500) {
+        } else if (280 <= num && num < 500) {
           this.pagedata.QCSIZETABLE.CCQTY = 50;
 
-        } else if (501 <= num < 1200) {
+        } else if (501 <= num && num <  1200) {
           this.pagedata.QCSIZETABLE.CCQTY = 80;
 
-        } else if (1200 <= num < 3200) {
+        } else if (1200 <= num && num <  3200) {
           this.pagedata.QCSIZETABLE.CCQTY = 125;
 
-        } else if (3200 <= num < 10000) {
+        } else if (3200 <= num && num <  10000) {
           this.pagedata.QCSIZETABLE.CCQTY = 200;
 
-        } else if (10000 <= num < 35000) {
+        } else if (10000 <= num && num <  35000) {
           this.pagedata.QCSIZETABLE.CCQTY = 315;
 
         } else if (35000 <= num) {
@@ -1376,10 +1392,14 @@
         if (this.isDisable) return;
         this.popupVisible = true;
       },
-      drawTable(url) {
+      drawTable() {
+        let url = this.$refs.SignCanvas.saveAsImg();
         this.pagedata.FIELD2 = url;
         this.popupVisible = false;
-      }
+      },
+      clearTable(){
+        this.$refs.SignCanvas.canvasClear();
+      },
     }
   }
 </script>
@@ -1396,5 +1416,13 @@
       text-align: left;
       margin-bottom: 3px;
     }
+  }
+
+  .canvas-wrap{
+    text-align: center;
+  }
+  .canvas-btns{
+    margin-top: 10px;
+    text-align: center;
   }
 </style>

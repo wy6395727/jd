@@ -382,8 +382,6 @@
           }
         }
 
-        debugger
-
         this.$router.push({name:countItem.NAME==0?'step1':'step2',query:{data:this.toJson(countItem),info:this.toJson(this.currentRow)}})
       },
       toJson(obj) {
