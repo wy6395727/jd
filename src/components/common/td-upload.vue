@@ -2,7 +2,7 @@
   <div class="td">
     <el-upload
       class=""
-      action="http://qctest.jade-fashion.com/api/qcservice/UpLoadImg"
+      action="/api/qcservice/UpLoadImg"
       accept="image/*" capture="camera"
       :show-file-list="false"
       :http-request="httpRequest"
@@ -61,12 +61,13 @@ export default {
       if(this.imageUrl.indexOf("blob")!=-1){
         return this.imageUrl;
       }else{
-        if(process.env.NODE_ENV == "development"){
-          return `/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
-        }else{
-          // return `http://qctest.jade-fashion.com/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
-          return `http://qctest.jade-fashion.com:6060/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
-        }
+        return `/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
+        // if(process.env.NODE_ENV == "development"){
+        //   return `/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
+        // }else{
+        //   // return `http://qctest.jade-fashion.com/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
+        //   return `http://jadeqc.jade-fashion.com:8080/api/qcservice/DownLoadFile?imgurl=${this.imageUrl}`
+        // }
       }
     }
   },
