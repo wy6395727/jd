@@ -1005,9 +1005,9 @@
         console.log(pagedata)
         let res = {};
 
-        if (pagedata.USERNAME == "") {
-          this.$router.push({name: "login"})
-        }
+        // if (pagedata.USERNAME == "") {
+        //   this.$router.push({name: "login"})
+        // }
 
         if (this.STATUS) {
           res = await Api.UpdateQcReport(pagedata);
@@ -1379,11 +1379,6 @@
         this.pagedata.QCKSIMGLIST[row][col].ImgPath = FilePath;
       },
       // --end
-
-
-//      openBase() {
-//        this.pagedata.show = true;
-//      },
 
       handleChange(value) {
       },

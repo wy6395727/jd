@@ -9,10 +9,6 @@ const Step2 = resovle => require(['../components/step2'], resovle);
 const Login = resovle => require(['../components/login'], resovle);
 
 
-const ttt = resovle => require(['../components/ttt'], resovle);
-
-
-
 export default new Router({
   routes: [
     {
