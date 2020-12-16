@@ -821,6 +821,15 @@
       // 验货员
       this.pagedata.USERNAME = this.$store.state.user.username;
       this.pagedata.QCNAME = this.$store.state.user.realname;
+      if(!this.$store.state.user.realname || !this.$store.state.user.username){
+        this.$message({
+          showClose: true,
+          message: '用户信息丢失，请重新登录',
+          duration: 9000,
+          type: 'warning'
+        })
+        this.$router.push({name: "login"})
+      }
 
       // canvas width
       this.canvasWidth = document.body.offsetWidth - 200;
@@ -1005,9 +1014,9 @@
         console.log(pagedata)
         let res = {};
 
-        // if (pagedata.USERNAME == "") {
-        //   this.$router.push({name: "login"})
-        // }
+        if (pagedata.USERNAME == "") {
+          this.$router.push({name: "login"})
+        }
 
         if (this.STATUS) {
           res = await Api.UpdateQcReport(pagedata);
@@ -1070,8 +1079,7 @@
             // 签名
             if (resData.FIELD2 != "") this.pagedata.FIELD2 = "data:image/png;base64," + resData.FIELD2;
 
-
-            this.pagedata.QCNAME = this.$store.state.user.realname;
+            // this.pagedata.QCNAME = this.$store.state.user.realname;
 
             this.isloading = false;
           });
