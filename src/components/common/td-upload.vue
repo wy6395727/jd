@@ -74,23 +74,18 @@ export default {
   methods: {
     //上傳圖片
      httpRequest(item) {
-      // let formData = new FormData();
-      // let base64Data;
-      // formData.append('ImgBase64', base64Data);
       let reader = new FileReader();
       let that=this;
       reader.readAsDataURL(item.file);
-      reader.onloadend = function() {
-        // formData.append("ImgBase64", reader.result);
-        Api.UpLoadImg({ImgBase64:reader.result})
+      reader.onloadend = function(x) {
+        that.render(reader.result,x).then(blob=>{
+          Api.UpLoadImg({ImgBase64:blob})
           .then(res => {
-//            let FilePath = res.data.DATAOBJ.FilePath;
-//            self.$emit("handlesuccess", FilePath, self.tdindex);
             that.handlesuccess(res);
           })
           .catch(err => console.log(err));
+        });
       };
-      // console.log('上传图片接口-参数', item.file, base64Data);
     },
     beforeAvatarUpload1(file) {
       const isImg = file.type.indexOf("image/") == 0;
@@ -109,15 +104,63 @@ export default {
       this.imageUrl = objURL;
     },
     handlesuccess(response) {
-      //            this.$refs.upload.submit();
       let FilePath = response.data.DATAOBJ.FilePath;
       this.$emit("handlesuccess", FilePath, this.tdindex);
     },
 
     handlePictureCardPreview(file){
       this.dialogVisible = true;
-    }
+    },
     //上傳圖片--end
+
+    //设置压缩图片的最大高度
+    render(src,picname) {
+
+       return new Promise(resolve => {
+         var MAX_HEIGHT = 1000;
+         // 创建一个 Image 对象
+         var image = new Image();
+         // 绑定 load 事件处理器，加载完成后执行
+
+         image.onload = function() {
+           // 获取 canvas DOM 对象
+           var canvas = document.createElement("canvas");
+           // 如果高度超标
+           if (image.height > MAX_HEIGHT && image.height >= image.width) {
+             // 宽度等比例缩放 *=
+             image.width *= MAX_HEIGHT / image.height;
+             image.height = MAX_HEIGHT;
+           }
+           //考录到用户上传的有可能是横屏图片同样过滤下宽度的图片。
+           if (image.width > MAX_HEIGHT && image.width > image.height) {
+             // 宽度等比例缩放 *=
+             image.height *= MAX_HEIGHT / image.width;
+             image.width = MAX_HEIGHT;
+           }
+
+           // 获取 canvas的 2d 画布对象,
+           var ctx = canvas.getContext("2d");
+           // canvas清屏，并设置为上面宽高
+           ctx.clearRect(0, 0, canvas.width, canvas.height);
+           // 重置canvas宽高
+           canvas.width = image.width;
+           canvas.height = image.height;
+           // 将图像绘制到canvas上
+           ctx.drawImage(image, 0, 0, image.width, image.height);
+           // !!! 注意，image 没有加入到 dom之中
+           //        document.getElementById('img').src = canvas.toDataURL("image/png");
+           var blob = canvas.toDataURL("image/jpeg");
+           //将转换结果放在要上传的图片数组里
+           // imgarr.push({"pic":blob,"pic_name":picname});
+
+           resolve(blob);
+         };
+         image.src = src;
+
+       })
+
+    }//到这里我们图片压缩的代码就结束了。我们再加上，一个事件控制把需要上传的图片数组传给后台就行啦。
+
   }
 };
 </script>
